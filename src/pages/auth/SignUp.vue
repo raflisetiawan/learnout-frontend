@@ -44,21 +44,38 @@ const rules = {
 const v$ = useVuelidate(rules, form);
 
 const onSubmit = async () => {
-  try {
-    await api.post('signup', { email: form.email, name: form.name, password: form.password, password_confirmation: form.confirmPassword }, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+  loading.value = true;
+  if (!v$.value.$invalid) {
+    try {
+      await api.post('signup', { email: form.email, name: form.name, password: form.password, password_confirmation: form.confirmPassword }, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      try {
+        const response = await api.post('signin', { email: form.email, password: form.password }, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        localStorage.setItem('signedIn', 'true');
+        localStorage.setItem('token', response.data.token);
+        router.push({ name: 'ChooseRole' });
+      } finally {
+        loading.value = false;
       }
-    });
-    router.push('/');
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      errorForm.isError = true;
-      error.response.data.message.map((errorMessage: string) => errorForm.message = errorMessage);
-      throw new Error(error.response.data.message);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        errorForm.isError = true;
+        error.response.data.message.map((errorMessage: string) => errorForm.message = errorMessage);
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('An error occurred.');
+    } finally {
+      loading.value = false;
     }
-    throw new Error('An error occurred.');
   }
 };
 

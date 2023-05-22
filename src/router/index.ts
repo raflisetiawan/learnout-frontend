@@ -8,6 +8,7 @@ import {
 
 import routes from './routes';
 import isAuthenticated from 'src/utils/isAuthenticated';
+import getStudentByUserId from 'src/utils/getStudentByUserId';
 
 /*
  * If not building with SSR mode, you can
@@ -35,13 +36,18 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth && !isAuthenticated()) {
       next({ name: 'SignIn' });
     } else if (to.meta.requiresGuest && isAuthenticated()) {
       next('/');
     } else {
-      next(); // Lanjutkan navigasi ke rute berikutnya
+      if (to.meta.requiresSignUp) {
+        const student = await getStudentByUserId(localStorage.getItem('token'));
+        console.log(student);
+      } else {
+        next(); // Lanjutkan navigasi ke rute berikutnya
+      }
     }
   });
 
