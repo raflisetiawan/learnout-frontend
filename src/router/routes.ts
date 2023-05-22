@@ -4,7 +4,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/IndexPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
 
   {
@@ -16,21 +22,24 @@ const routes: RouteRecordRaw[] = [
         path: '',
         component: () => import('src/pages/auth/SignIn.vue'),
         name: 'SignIn',
+        meta: {
+          requiresGuest: true,
+        },
       },
     ],
   },
-  // {
-  //   path: '/signup',
-  //   component: () => import('layouts/AuthLayout.vue'),
-  //   children: [
-  //     {
-  //       path: '',
-  //       component: () => import('src/pages/auth/SignUp.vue'),
-  //       name: 'SignUp',
-  //       meta: { requiresGuest: true },
-  //     },
-  //   ],
-  // },
+  {
+    path: '/signup',
+    component: () => import('layouts/AuthLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/auth/SignUp.vue'),
+        name: 'SignUp',
+        meta: { requiresGuest: true },
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

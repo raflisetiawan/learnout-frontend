@@ -3,6 +3,8 @@ import { reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { email, required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { api } from 'boot/axios'
 // import { getUser } from 'src/services/auth';
 
 interface FormState {
@@ -34,7 +36,25 @@ const rules = {
 const $v = useVuelidate(rules, form)
 
 const onSubmit = async () => {
-  console.log('ok')
+  try {
+    const response = await api.post('signin', { email: form.email, password: form.password }, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    localStorage.setItem('signedIn', 'true')
+    //set localStorage Token
+    localStorage.setItem('token', response.data.token)
+    router.push('/');
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      signInError.isError = true;
+      error.response.data.message.map((errorMessage: string) => signInError.message = errorMessage);
+      throw new Error(error.response.data.message);
+    }
+    throw new Error('An error occurred.');
+  }
 }
 </script>
 <template>
