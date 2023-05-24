@@ -2,7 +2,6 @@
 import { reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { email, minLength, required } from '@vuelidate/validators';
-import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { api } from 'boot/axios'
@@ -44,8 +43,8 @@ const rules = {
 const v$ = useVuelidate(rules, form);
 
 const onSubmit = async () => {
-  loading.value = true;
   if (!v$.value.$invalid) {
+    loading.value = true;
     try {
       await api.post('signup', { email: form.email, name: form.name, password: form.password, password_confirmation: form.confirmPassword }, {
         headers: {

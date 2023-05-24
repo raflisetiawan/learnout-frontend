@@ -9,6 +9,7 @@ import {
 import routes from './routes';
 import isAuthenticated from 'src/utils/isAuthenticated';
 import getStudentByUserId from 'src/utils/getStudentByUserId';
+import getCompanyByUserId from 'src/utils/getCompanyByUserId';
 
 /*
  * If not building with SSR mode, you can
@@ -44,7 +45,10 @@ export default route(function (/* { store, ssrContext } */) {
     } else {
       if (to.meta.requiresSignUp) {
         const student = await getStudentByUserId(localStorage.getItem('token'));
-        console.log(student);
+        const company = await getCompanyByUserId(localStorage.getItem('token'));
+        if (student.data.isRegistered) next('/');
+        else if (company.data.isRegistered) next('/');
+        else next();
       } else {
         next(); // Lanjutkan navigasi ke rute berikutnya
       }

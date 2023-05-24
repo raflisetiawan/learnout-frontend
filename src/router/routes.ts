@@ -52,6 +52,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresSignUp: true },
     name: 'StudentRegistration',
   },
+  {
+    path: '/choose-role/company',
+    component: () => import('src/pages/auth/CompaniesRegistration.vue'),
+    meta: { requiresSignUp: true },
+    name: 'CompanyRegistration',
+  },
 
   // Always leave this as last one,
   // but you can also remove it

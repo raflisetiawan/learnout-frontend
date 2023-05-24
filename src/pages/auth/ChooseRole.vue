@@ -14,7 +14,7 @@ const $q = useQuasar();
       </div>
       <div class="col-md-5 col-sm-12 q-mx-md text-center">
         <q-img src="../../assets/img/owner.jpg" spinner-color="pink" style="max-width: 400px;" />
-        <q-btn class="q-mt-lg" color="primary">Daftar sebagai Pemilik Usaha</q-btn>
+        <q-btn class="q-mt-lg" :to="{ name: 'CompanyRegistration' }" color="primary">Daftar sebagai Pemilik Usaha</q-btn>
       </div>
     </div>
   </div>

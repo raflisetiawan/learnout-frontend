@@ -37,6 +37,7 @@ const $v = useVuelidate(rules, form)
 
 const onSubmit = async (): Promise<void> => {
   if (!$v.value.$invalid) {
+    loading.value = true;
     try {
       const response = await api.post('signin', { email: form.email, password: form.password }, {
         headers: {
@@ -55,6 +56,9 @@ const onSubmit = async (): Promise<void> => {
         throw new Error(error.response.data.message);
       }
       throw new Error('An error occurred.');
+    }
+    finally {
+      loading.value = false;
     }
   }
 };

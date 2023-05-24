@@ -18,6 +18,7 @@ interface FormInfo {
     value: number,
     label: string
   },
+  accept: boolean
 }
 
 interface SubmitError {
@@ -48,6 +49,7 @@ const selectError = reactive<SelectError>({
 })
 
 const router = useRouter();
+const loading = ref(false);
 const loadingSelect = ref(false);
 const loadUser = ref(true);
 const user = ref();
@@ -91,7 +93,8 @@ const formData = reactive<FormInfo>({
     location: '',
     value: 0,
     label: 'Pilih Instansi'
-  }
+  },
+  accept: false
 })
 
 const phoneValidation = helpers.regex(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im);
@@ -121,9 +124,9 @@ const filterFn = (val: string, update: (callback: () => void) => void) => {
   });
 };
 
-const accept = ref();
 const onSubmit = async () => {
-  if (!$v.value.$invalid) {
+  if (!$v.value.$invalid && formData.accept) {
+    loading.value = true;
     try {
       await api.post('students', {
         name: formData.fullName,
@@ -150,9 +153,12 @@ const onSubmit = async () => {
         throw new Error(error.response.data.message);
       }
       throw new Error('An error occurred.');
+    } finally {
+      loading.value = false;
     }
   }
 }
+
 </script>
 
 <template>
@@ -192,10 +198,11 @@ const onSubmit = async () => {
                 </template>
               </q-select>
 
-              <q-toggle v-model="accept" label="I accept the license and terms" />
+              <q-toggle v-model="formData.accept" label="Saya menerima lisensi dan persyaratan" />
 
               <div>
-                <q-btn label="Submit" type="submit" color="primary" :disable="$v?.$invalid" />
+                <q-btn label="Daftar" type="submit" color="primary"
+                  :disable="loadUser || $v?.$invalid || !formData.accept" :loading="loading" />
               </div>
             </q-form>
           </q-card-section>
