@@ -6,18 +6,15 @@ import { api } from 'src/boot/axios';
 import axios from 'axios';
 import getUser from 'src/utils/getUser';
 import { useRouter } from 'vue-router';
+import LocationSelect from 'components/LocationSelect.vue';
+import { useSelectLocationStore } from 'stores/selectLocation';
 
 interface FormInfo {
   fullName: string,
   address: string,
   phone: number | string,
-  university: {
-    id: number,
-    name: string
-    location: string,
-    value: number,
-    label: string
-  },
+  university: UniversityInfo,
+  category: CategoryInfo[],
   accept: boolean
 }
 
@@ -37,8 +34,16 @@ interface UniversityInfo {
   value: number,
   label: string
 }
+interface CategoryInfo {
+  id: number,
+  name: string,
+  value: number,
+  label: string
+}
 
 const universities = reactive<UniversityInfo[]>([]);
+const categories = reactive<CategoryInfo[]>([]);
+const selectLocationStore = useSelectLocationStore();
 const submitError = reactive<SubmitError>({
   isError: false,
   message: ''
@@ -51,13 +56,16 @@ const selectError = reactive<SelectError>({
 const router = useRouter();
 const loading = ref(false);
 const loadingSelect = ref(false);
+const loadingSelectCategory = ref(false);
 const loadUser = ref(true);
 const user = ref();
 onMounted(async () => {
   user.value = await getUser(localStorage.getItem('token'));
+  loadingSelectCategory.value = true;
   loadingSelect.value = true;
   try {
     const response = await api.get('universities');
+
     let data = [];
     data.push(...response.data.data)
     data.map((university) => {
@@ -69,6 +77,25 @@ onMounted(async () => {
         label: university.name
       })
     })
+    try {
+      const response = await api.get('categories');
+      let data = [];
+      data.push(...response.data.data);
+      data.map((category) => {
+        categories.push({
+          id: category.id,
+          name: category.name,
+          label: category.name,
+          value: category.id
+        });
+      })
+    } catch (error) {
+      throw error
+    } finally {
+      loadingSelectCategory.value = false;
+      loadingSelect.value = false;
+      loadUser.value = false;
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       error.response.data.message.forEach((errorMessage: string) => {
@@ -77,9 +104,6 @@ onMounted(async () => {
       throw new Error(error.response.data.message);
     }
     throw new Error('An error occurred.');
-  } finally {
-    loadingSelect.value = false;
-    loadUser.value = false;
   }
 })
 
@@ -94,6 +118,7 @@ const formData = reactive<FormInfo>({
     value: 0,
     label: 'Pilih Instansi'
   },
+  category: [],
   accept: false
 })
 
@@ -107,6 +132,7 @@ const rules = {
 const $v = useVuelidate(rules, formData)
 
 const options = ref(universities)
+const optionsCategory = ref(categories);
 
 const filterFn = (val: string, update: (callback: () => void) => void) => {
   if (val === '') {
@@ -123,8 +149,24 @@ const filterFn = (val: string, update: (callback: () => void) => void) => {
     );
   });
 };
+const filterFnCategory = (val: string, update: (callback: () => void) => void) => {
+  if (val === '') {
+    update(() => {
+      optionsCategory.value = categories;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    optionsCategory.value = categories.filter(
+      (category) => category.name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
 
 const onSubmit = async () => {
+  console.log(formData.category)
   if (!$v.value.$invalid && formData.accept) {
     loading.value = true;
     try {
@@ -133,7 +175,10 @@ const onSubmit = async () => {
         address: formData.address,
         phone: formData.phone,
         user_id: user.value.data.id,
-        university_id: formData.university?.id
+        university_id: formData.university?.id,
+        categories: formData.category.map((category) => category.id),
+        regency: selectLocationStore.$state.regency?.name,
+        district: selectLocationStore.$state.district?.name
       }, {
         headers: {
           Accept: 'application/json',
@@ -197,6 +242,18 @@ const onSubmit = async () => {
                   </q-item>
                 </template>
               </q-select>
+              <q-select :loading="loadingSelectCategory" filled v-model="formData.category" use-input input-debounce="0"
+                @filter="filterFnCategory" use-chips behavior="dialog" :options="optionsCategory"
+                label="Minat atau interest anda" multiple>
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+              <LocationSelect />
 
               <q-toggle v-model="formData.accept" label="Saya menerima lisensi dan persyaratan" />
 

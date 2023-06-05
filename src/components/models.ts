@@ -17,3 +17,34 @@ export interface UserInfo {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ProvincesInfo {
+  id: number;
+  name: string;
+  value: number;
+  label: string;
+}
+export interface RegenciesInfo {
+  id: number;
+  name: string;
+  value: number;
+  label: string;
+}
+export interface DisctrictInfo {
+  id: number;
+  name: string;
+  value: number;
+  label: string;
+}
+
+export interface UniversitiesInfo {
+  id: number;
+  name: string;
+  location: string;
+  regency: string;
+  district: string;
+}
+export interface CategoriesInfo {
+  id: number;
+  name: string;
+}

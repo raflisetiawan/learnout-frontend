@@ -6,6 +6,8 @@ import { api } from 'src/boot/axios';
 import axios from 'axios';
 import getUser from 'src/utils/getUser';
 import { useRouter } from 'vue-router';
+import LocationSelect from 'components/LocationSelect.vue';
+import { useSelectLocationStore } from 'src/stores/selectLocation';
 
 interface FormInfo {
   name: string,
@@ -31,6 +33,7 @@ const router = useRouter();
 const loadUser = ref(true);
 const user = ref();
 const loading = ref(false);
+const selectLocationStore = useSelectLocationStore();
 
 onMounted(async () => {
   try {
@@ -79,13 +82,24 @@ const onSubmit = async () => {
         email: formData.email,
         website: formData.website,
         user_id: user.value.data.id,
+        regency: selectLocationStore.$state.regency?.name,
+        district: selectLocationStore.$state.district?.name
       }, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         }
       });
-      router.push('/')
+      localStorage.setItem('role', 'company');
+      try {
+        const response = await getUser(localStorage.getItem('token'));
+        const userData = response.data;
+        console.log(userData);
+        await api.patch(`users/${userData.id}`, { role: 'company' });
+        router.push('/')
+      } catch (error) {
+        throw error;
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         throw new Error(error.response.data.message);
@@ -132,6 +146,7 @@ const onSubmit = async () => {
               <q-input type="text" filled v-model="formData.website" label="Website" lazy-rules :error="$v.website.$error"
                 :error-message="$v.website.$errors.map((e) => e.$message).join()" @input="$v.website.$touch"
                 @blur="$v.website.$touch" />
+              <LocationSelect />
 
               <q-toggle v-model="formData.accept" label="Saya menerima lisensi dan persyaratan" lazy-rules />
 

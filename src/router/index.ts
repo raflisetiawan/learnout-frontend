@@ -49,6 +49,9 @@ export default route(function (/* { store, ssrContext } */) {
         if (student.data.isRegistered) next('/');
         else if (company.data.isRegistered) next('/');
         else next();
+      } else if (to.meta.requiresCompany) {
+        const company = await getCompanyByUserId(localStorage.getItem('token'));
+        next();
       } else {
         next(); // Lanjutkan navigasi ke rute berikutnya
       }

@@ -3,12 +3,12 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/CompanyProfileLayout.vue'),
     children: [
       {
         path: '',
         component: () => import('pages/IndexPage.vue'),
-        meta: { requiresAuth: true },
+        name: 'Home',
       },
     ],
   },
@@ -57,6 +57,70 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/pages/auth/CompaniesRegistration.vue'),
     meta: { requiresSignUp: true },
     name: 'CompanyRegistration',
+  },
+
+  {
+    path: '/admin',
+    component: () => import('layouts/AdminLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/admin/IndexPage.vue'),
+        name: 'Admin',
+      },
+      {
+        path: 'universities/create',
+        component: () => import('pages/admin/universities/CreatePage.vue'),
+        name: 'CreateUniversity',
+      },
+      {
+        path: 'universities',
+        component: () => import('pages/admin/universities/IndexPage.vue'),
+        name: 'Universities',
+      },
+      {
+        path: 'universities/:id',
+        component: () => import('pages/admin/universities/ShowPage.vue'),
+        name: 'ShowUniversities',
+      },
+      {
+        path: 'universities/:id/edit',
+        component: () => import('pages/admin/universities/EditPage.vue'),
+        name: 'EditUniversities',
+      },
+      {
+        path: 'categories',
+        component: () => import('pages/admin/categories/IndexPage.vue'),
+        name: 'Categories',
+      },
+      {
+        path: 'categories/create',
+        component: () => import('pages/admin/categories/CreatePage.vue'),
+        name: 'CreateCategory',
+      },
+      {
+        path: 'categories/:id',
+        component: () => import('pages/admin/categories/ShowPage.vue'),
+        name: 'ShowCategory',
+      },
+      {
+        path: 'categories/:id/edit',
+        component: () => import('pages/admin/categories/EditPage.vue'),
+        name: 'EditCategory',
+      },
+    ],
+  },
+  {
+    path: '/company',
+    component: () => import('layouts/AdminLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/admin/IndexPage.vue'),
+        name: 'Company',
+        meta: { requiresCompany: true },
+      },
+    ],
   },
 
   // Always leave this as last one,

@@ -5,7 +5,7 @@ import { email, required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { api } from 'boot/axios'
-// import { getUser } from 'src/services/auth';
+
 
 interface FormState {
   email: string,
