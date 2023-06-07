@@ -11,11 +11,13 @@ export interface UserInfo {
   id: number;
   name: string;
   email: string;
-  emailVerifiedAt: Date | null;
+  emailVerifiedAt: string | null;
   password: string;
   rememberToken: string;
   createdAt: Date;
   updatedAt: Date;
+  role: string;
+  image: string | null;
 }
 
 export interface ProvincesInfo {
@@ -47,4 +49,64 @@ export interface UniversitiesInfo {
 export interface CategoriesInfo {
   id: number;
   name: string;
+}
+
+export interface CompanyInfo {
+  id: string | number;
+  userId: string | number;
+  name: string;
+  description: string;
+  location: string;
+  website: string;
+  email: string;
+  phone: number | string;
+  regency: string;
+  district: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface JobInfo {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  regency: string;
+  district: string;
+  schedule: string;
+  start_time: string; //time hour minute
+  end_time: string; //time hour minute
+  category: CategoryInfo[];
+}
+
+export interface CategoryInfo {
+  id: number;
+  name: string;
+  value: number;
+  label: string;
+}
+
+export interface StudentInfo {
+  id: number;
+  userId: number;
+  name: string;
+  address: string;
+  phone: string;
+  regency: string;
+  district: string;
+  university_id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface JobsInfo {
+  title: string;
+  description: string;
+  location: string;
+  regency: string;
+  district: string;
+  schedule: string;
+  start_time: string; //time hour minute
+  end_time: string; //time hour minute
+  category: CategoryInfo[];
 }

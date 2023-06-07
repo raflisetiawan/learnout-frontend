@@ -10,53 +10,68 @@ import routes from './routes';
 import isAuthenticated from 'src/utils/isAuthenticated';
 import getStudentByUserId from 'src/utils/getStudentByUserId';
 import getCompanyByUserId from 'src/utils/getCompanyByUserId';
+import getRole from 'src/utils/getRole';
+import { useRoleStore } from 'src/stores/role';
 
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
+// Define the router instance outside of the route function
+const createHistory = process.env.SERVER
+  ? createMemoryHistory
+  : process.env.VUE_ROUTER_MODE === 'history'
+  ? createWebHistory
+  : createWebHashHistory;
 
-export default route(function (/* { store, ssrContext } */) {
-  const createHistory = process.env.SERVER
-    ? createMemoryHistory
-    : process.env.VUE_ROUTER_MODE === 'history'
-    ? createWebHistory
-    : createWebHashHistory;
+const Router = createRouter({
+  scrollBehavior: () => ({ left: 0, top: 0 }),
+  routes,
+  history: createHistory(process.env.VUE_ROUTER_BASE),
+});
 
-  const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    routes,
-
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    history: createHistory(process.env.VUE_ROUTER_BASE),
-  });
+// Use the router instance in the route function
+export default route(function () {
+  let role: string;
+  const roleStore = useRoleStore();
 
   Router.beforeEach(async (to, from, next) => {
+    if (localStorage.getItem('token')) {
+      try {
+        const response = await getRole(localStorage.getItem('token'));
+        role = response.data.data.role;
+        roleStore.$state.role = role;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    // Your navigation guard logic
     if (to.meta.requiresAuth && !isAuthenticated()) {
       next({ name: 'SignIn' });
     } else if (to.meta.requiresGuest && isAuthenticated()) {
       next('/');
     } else {
       if (to.meta.requiresSignUp) {
-        const student = await getStudentByUserId(localStorage.getItem('token'));
-        const company = await getCompanyByUserId(localStorage.getItem('token'));
-        if (student.data.isRegistered) next('/');
-        else if (company.data.isRegistered) next('/');
-        else next();
+        const [student, company] = await Promise.all([
+          getStudentByUserId(localStorage.getItem('token')),
+          getCompanyByUserId(localStorage.getItem('token')),
+        ]);
+        if (student.data.isRegistered || company.data.isRegistered) {
+          next('/');
+        } else {
+          next();
+        }
       } else if (to.meta.requiresCompany) {
-        const company = await getCompanyByUserId(localStorage.getItem('token'));
-        next();
+        if (role === 'company') next();
+        else next({ name: 'Unauthorized' });
+      } else if (to.meta.requiresdAdmin) {
+        if (role === 'admin') next();
+        else next({ name: 'Unauthorized' }); // Lanjutkan navigasi ke rute berikutnya
       } else {
-        next(); // Lanjutkan navigasi ke rute berikutnya
+        next();
       }
     }
   });
 
   return Router;
 });
+
+// Export the router instance separately
+export { Router };

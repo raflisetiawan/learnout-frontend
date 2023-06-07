@@ -166,7 +166,6 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
 };
 
 const onSubmit = async () => {
-  console.log(formData.category)
   if (!$v.value.$invalid && formData.accept) {
     loading.value = true;
     try {

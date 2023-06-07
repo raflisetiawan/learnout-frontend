@@ -47,26 +47,52 @@ const onSubmit = async (): Promise<void> => {
       });
       localStorage.setItem('signedIn', 'true');
       localStorage.setItem('token', response.data.token);
-      router.push('/');
+      if (response.data.user.role === 'company') {
+        router.push({ name: 'Company' });
+      } else if (response.data.user.role === 'admin') {
+        router.push({ name: 'Admin' });
+      } else {
+        router.push('/');
+      }
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
-        error.response.data.message.forEach((errorMessage: string) => {
-          signInError.message = errorMessage;
-        });
-        throw new Error(error.response.data.message);
+        if (error.response.status === 401) {
+          signInError.isError = true;
+          signInError.message = 'Password yang Anda masukkan salah.';
+          throw new Error('Password yang Anda masukkan salah.');
+        } else if (error.response.status === 404) {
+          signInError.isError = true;
+          signInError.message = error.response.data.message;
+          throw new Error('Password yang Anda masukkan salah.');
+        } else if (Array.isArray(error.response.data.message)) {
+          error.response.data.message.forEach((errorMessage: string) => {
+            signInError.isError = true;
+            signInError.message = errorMessage;
+          });
+          throw new Error(error.response.data.message.join(', '));
+        } else if (error.response.status === 500) {
+          signInError.isError = true;
+          signInError.message = 'Terjadi masalah pada server. Silakan hubungi administrator.';
+          throw new Error('Terjadi masalah pada server. Silakan hubungi administrator.');
+        } else {
+          signInError.isError = true;
+          signInError.message = 'Terjadi kesalahan saat proses autentikasi. Silakan coba lagi nanti.';
+          throw new Error('Terjadi kesalahan saat proses autentikasi. Silakan coba lagi nanti.');
+        }
       }
       throw new Error('An error occurred.');
-    }
-    finally {
+    } finally {
       loading.value = false;
     }
   }
 };
 
+
 </script>
 <template>
   <div class="text-h6 text-center">SIGN IN</div>
-  <div class="q-pa-md">
+  <div class="q-pb-md">
     <q-banner inline-actions :class="signInError.isError ? `text-white bg-red` : `text-white bg-red hidden`" rounded
       v-if="signInError.isError">
       {{ signInError.message }}

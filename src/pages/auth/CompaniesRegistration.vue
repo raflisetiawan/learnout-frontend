@@ -90,12 +90,11 @@ const onSubmit = async () => {
           'Content-Type': 'application/json'
         }
       });
-      localStorage.setItem('role', 'company');
       try {
         const response = await getUser(localStorage.getItem('token'));
         const userData = response.data;
         console.log(userData);
-        await api.patch(`users/${userData.id}`, { role: 'company' });
+        await api.patch(`users/update_role/${userData.id}`, { role: 'company' });
         router.push('/')
       } catch (error) {
         throw error;

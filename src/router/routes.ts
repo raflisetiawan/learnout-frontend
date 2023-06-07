@@ -3,7 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/CompanyProfileLayout.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
@@ -62,6 +62,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
+    meta: { requiresdAdmin: true },
     children: [
       {
         path: '',
@@ -116,15 +117,39 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/admin/IndexPage.vue'),
+        component: () => import('pages/company/IndexPage.vue'),
         name: 'Company',
         meta: { requiresCompany: true },
+      },
+      {
+        path: 'create',
+        component: () => import('pages/company/job/CreateJob.vue'),
+        name: 'CreateJob',
+        meta: { requiresCompany: true },
+      },
+    ],
+  },
+
+  {
+    path: '/my-profile',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/my_profile/ProfilePage.vue'),
+        meta: { requiresAuth: true },
+        name: 'MyProfile',
       },
     ],
   },
 
   // Always leave this as last one,
   // but you can also remove it
+  {
+    path: '/unauthorized',
+    component: () => import('pages/NotAuthorized.vue'),
+    name: 'Unauthorized',
+  },
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),

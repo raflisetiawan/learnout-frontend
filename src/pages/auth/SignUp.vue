@@ -41,7 +41,6 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, form);
-
 const onSubmit = async () => {
   if (!v$.value.$invalid) {
     loading.value = true;
@@ -66,11 +65,30 @@ const onSubmit = async () => {
         loading.value = false;
       }
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         errorForm.isError = true;
-        error.response.data.message.map((errorMessage: string) => errorForm.message = errorMessage);
+        if (error.response.data.email) {
+          if (Array.isArray(error.response.data.email)) {
+            error.response.data.email.forEach((errorMessage: string) => {
+              errorForm.message = errorMessage
+            });
+          } else {
+            errorForm.message = error.response.data.email;
+          }
+        }
+        if (error.response.data.password) {
+          if (Array.isArray(error.response.data.password)) {
+            error.response.data.password.forEach((errorMessage: string) => {
+              errorForm.message = errorMessage;
+            });
+          } else {
+            errorForm.message = error.response.data.password;
+          }
+        }
         throw new Error(error.response.data.message);
       }
+
       throw new Error('An error occurred.');
     } finally {
       loading.value = false;
@@ -80,7 +98,16 @@ const onSubmit = async () => {
 
 </script>
 <template>
-  <div class="text-h6 q-mb-lg text-center">SIGN UP</div>
+  <div class="text-h6 q-mb-md text-center">SIGN UP</div>
+  <div class="q-pb-md">
+    <q-banner inline-actions :class="errorForm.isError ? `text-white bg-red` : `text-white bg-red hidden`" rounded
+      v-if="errorForm.isError">
+      {{ errorForm.message }}
+      <template v-slot:action>
+        <q-btn flat dense icon="fa-solid fa-xmark" @click="errorForm.isError = false" />
+      </template>
+    </q-banner>
+  </div>
   <q-form @submit="onSubmit" class="q-gutter-md">
     <q-input filled v-model="form.email" label="Email *" type="email" :error="v$.email.$error" @input="v$.email.$touch"
       @blur="v$.email.$touch" :error-message="v$.email.$errors.map((e) => e.$message).join()">
@@ -91,17 +118,14 @@ const onSubmit = async () => {
 
     <q-input filled v-model="form.password" type="password" label="Password *" :error="v$.password.$error"
       @input="v$.password.$touch" @blur="v$.password.$touch"
-      :error-message="v$.password.$errors.map((e) => e.$message).join()"
-      :rules="[value => value === form.confirmPassword || 'Should require a matching password and confirmation']" />
+      :error-message="v$.password.$errors.map((e) => e.$message).join()" />
 
     <q-input filled v-model="form.confirmPassword" label="Konfirmasi Password *" type="password"
-      :rules="[value => value === form.password || 'Should require a matching password and confirmation']"
       :error="v$.confirmPassword.$error" @input="v$.confirmPassword.$touch" @blur="v$.confirmPassword.$touch"
       :error-message="v$.confirmPassword.$errors.map((e) => e.$message).join()" />
 
     <div>
-      <q-btn label="Sign Up" type="submit" color="primary" :loading="loading"
-        :disable="v$?.$invalid || form.password !== form.confirmPassword" />
+      <q-btn label="Sign Up" type="submit" color="primary" :loading="loading" :disable="v$?.$invalid" />
     </div>
     <div class="text-center">
       <q-btn class="flex-center" dense flat label="Already have account?, Sign In" :to="{ name: 'SignIn' }"></q-btn>
