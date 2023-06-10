@@ -77,6 +77,8 @@ export interface JobInfo {
   start_time: string; //time hour minute
   end_time: string; //time hour minute
   category: CategoryInfo[];
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface CategoryInfo {
@@ -109,4 +111,21 @@ export interface JobsInfo {
   start_time: string; //time hour minute
   end_time: string; //time hour minute
   category: CategoryInfo[];
+}
+
+export interface JobWithCompanyWithCategoriesInfo {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  regency: string;
+  district: string;
+  schedule: string;
+  start_time: string; //time hour minute
+  end_time: string; //time hour minute
+  created_at: Date;
+  updated_at: Date;
+  company: CompanyInfo;
+  company_id: number;
+  categories: CategoryInfo[];
 }

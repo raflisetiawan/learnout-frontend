@@ -6,29 +6,34 @@ import { required } from '@vuelidate/validators';
 import LocationSelect from 'components/LocationSelect.vue';
 import { api } from 'src/boot/axios';
 import { useSelectLocationStore } from 'src/stores/selectLocation';
-import getUser from 'src/utils/getUser';
+import { useQuasar } from 'quasar';
+import { useUserStore } from 'stores/user';
 
 const formJob = reactive<JobInfo>({
   id: 0,
   title: '',
-  description: '',
+  description: 'Deskripsi Pekerjaan',
   location: '',
   regency: '',
   district: '',
   end_time: '10:56',
   schedule: '',
   start_time: '10:56',
-  category: []
+  category: [],
+  created_at: new Date(),
+  updated_at: new Date()
 });
+const $q = useQuasar();
 const companyId = ref();
 const categories = reactive<CategoryInfo[]>([]);
 const loadingSelectCategory = ref(false);
+const userStore = useUserStore();
 
 onMounted(async () => {
   loadingSelectCategory.value = true;
   try {
-    const response = await getUser(localStorage.getItem('token'));
-    companyId.value = response.data.id;
+    const getCompany = await api(`/companies/getOneCompanyByUserId/${userStore.$state.userId}`)
+    companyId.value = getCompany.data.company.id;
   } catch (error) {
     throw error;
   }
@@ -111,9 +116,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
               <q-input filled v-model="formJob.title" label="Judul Pekerjaan" lazy-rules :error="$v.title.$error"
                 :error-message="$v.title.$errors.map((e) => e.$message).join()" @input="$v.title.$touch"
                 @blur="$v.title.$touch" />
-              <q-input filled autogrow v-model="formJob.description" label="Deskripsi Pekerjaan" lazy-rules
-                :error="$v.description.$error" :error-message="$v.description.$errors.map((e) => e.$message).join()"
-                @input="$v.description.$touch" @blur="$v.description.$touch" />
+
               <q-input filled autogrow v-model="formJob.location" label="Alamat Lengkap Tempat Kerja" lazy-rules
                 :error="$v.location.$error" :error-message="$v.location.$errors.map((e) => e.$message).join()"
                 @input="$v.location.$touch" @blur="$v.location.$touch" />
@@ -158,6 +161,90 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
                   </q-item>
                 </template>
               </q-select>
+              <q-editor v-model="formJob.description" :dense="$q.screen.lt.md" :toolbar="[
+                [
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    list: 'only-icons',
+                    options: ['left', 'center', 'right', 'justify']
+                  },
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    options: ['left', 'center', 'right', 'justify']
+                  }
+                ],
+                ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+                ['token', 'hr', 'link', 'custom_btn'],
+                ['print', 'fullscreen'],
+                [
+                  {
+                    label: $q.lang.editor.formatting,
+                    icon: $q.iconSet.editor.formatting,
+                    list: 'no-icons',
+                    options: [
+                      'p',
+                      'h1',
+                      'h2',
+                      'h3',
+                      'h4',
+                      'h5',
+                      'h6',
+                      'code'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.fontSize,
+                    icon: $q.iconSet.editor.fontSize,
+                    fixedLabel: true,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'size-1',
+                      'size-2',
+                      'size-3',
+                      'size-4',
+                      'size-5',
+                      'size-6',
+                      'size-7'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.defaultFont,
+                    icon: $q.iconSet.editor.font,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'default_font',
+                      'arial',
+                      'arial_black',
+                      'comic_sans',
+                      'courier_new',
+                      'impact',
+                      'lucida_grande',
+                      'times_new_roman',
+                      'verdana'
+                    ]
+                  },
+                  'removeFormat'
+                ],
+                ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+                ['undo', 'redo'],
+                ['viewsource']
+              ]" :fonts="{
+  arial: 'Arial',
+  arial_black: 'Arial Black',
+  comic_sans: 'Comic Sans MS',
+  courier_new: 'Courier New',
+  impact: 'Impact',
+  lucida_grande: 'Lucida Grande',
+  times_new_roman: 'Times New Roman',
+  verdana: 'Verdana'
+}" />
               <div>
                 <q-btn label="Submit" type="submit" color="primary" />
               </div>

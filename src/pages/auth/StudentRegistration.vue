@@ -4,10 +4,10 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, helpers } from '@vuelidate/validators';
 import { api } from 'src/boot/axios';
 import axios from 'axios';
-import getUser from 'src/utils/getUser';
 import { useRouter } from 'vue-router';
 import LocationSelect from 'components/LocationSelect.vue';
 import { useSelectLocationStore } from 'stores/selectLocation';
+import { useUserStore } from 'src/stores/user';
 
 interface FormInfo {
   fullName: string,
@@ -41,6 +41,7 @@ interface CategoryInfo {
   label: string
 }
 
+const userStore = useUserStore();
 const universities = reactive<UniversityInfo[]>([]);
 const categories = reactive<CategoryInfo[]>([]);
 const selectLocationStore = useSelectLocationStore();
@@ -57,15 +58,11 @@ const router = useRouter();
 const loading = ref(false);
 const loadingSelect = ref(false);
 const loadingSelectCategory = ref(false);
-const loadUser = ref(true);
-const user = ref();
 onMounted(async () => {
-  user.value = await getUser(localStorage.getItem('token'));
   loadingSelectCategory.value = true;
   loadingSelect.value = true;
   try {
     const response = await api.get('universities');
-
     let data = [];
     data.push(...response.data.data)
     data.map((university) => {
@@ -94,7 +91,6 @@ onMounted(async () => {
     } finally {
       loadingSelectCategory.value = false;
       loadingSelect.value = false;
-      loadUser.value = false;
     }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -173,7 +169,7 @@ const onSubmit = async () => {
         name: formData.fullName,
         address: formData.address,
         phone: formData.phone,
-        user_id: user.value.data.id,
+        user_id: userStore.$state.userId,
         university_id: formData.university?.id,
         categories: formData.category.map((category) => category.id),
         regency: selectLocationStore.$state.regency?.name,
@@ -206,7 +202,6 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <q-linear-progress indeterminate v-if="loadUser" color="pink-4" />
   <div class="q-pa-md">
     <div class="row justify-center">
       <div class="col-md-7 col-sm-10">
@@ -257,8 +252,8 @@ const onSubmit = async () => {
               <q-toggle v-model="formData.accept" label="Saya menerima lisensi dan persyaratan" />
 
               <div>
-                <q-btn label="Daftar" type="submit" color="primary"
-                  :disable="loadUser || $v?.$invalid || !formData.accept" :loading="loading" />
+                <q-btn label="Daftar" type="submit" color="primary" :disable="$v?.$invalid || !formData.accept"
+                  :loading="loading" />
               </div>
             </q-form>
           </q-card-section>

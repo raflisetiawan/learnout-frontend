@@ -12,6 +12,7 @@ import getStudentByUserId from 'src/utils/getStudentByUserId';
 import getCompanyByUserId from 'src/utils/getCompanyByUserId';
 import getRole from 'src/utils/getRole';
 import { useRoleStore } from 'src/stores/role';
+import { useUserStore } from 'src/stores/user';
 
 // Define the router instance outside of the route function
 const createHistory = process.env.SERVER
@@ -30,11 +31,13 @@ const Router = createRouter({
 export default route(function () {
   let role: string;
   const roleStore = useRoleStore();
+  const userStore = useUserStore();
 
   Router.beforeEach(async (to, from, next) => {
     if (localStorage.getItem('token')) {
       try {
         const response = await getRole(localStorage.getItem('token'));
+        userStore.$state.userId = response.data.data.id;
         role = response.data.data.role;
         roleStore.$state.role = role;
       } catch (error) {

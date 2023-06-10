@@ -3,6 +3,7 @@ import FilterJob from 'components/student/FilterJob.vue';
 import SearchJob from './SearchJob.vue';
 import AccordingSkill from 'src/components/student/AccordingSkill.vue';
 import { defineAsyncComponent } from 'vue';
+import WorkAroundSkeleton from 'src/components/skeletons/WorkAroundSkeleton.vue';
 
 const WorkAround = defineAsyncComponent(() =>
   import('components/student/WorkAround.vue')
@@ -25,10 +26,15 @@ const WorkAround = defineAsyncComponent(() =>
       <Suspense>
         <WorkAround />
         <template #fallback>
-          <q-linear-progress indeterminate />
+          <WorkAroundSkeleton />
         </template>
       </Suspense>
-      <AccordingSkill />
+      <Suspense>
+        <AccordingSkill />
+        <template #fallback>
+          <WorkAroundSkeleton />
+        </template>
+      </Suspense>
     </q-page-container>
   </q-layout>
 </template>

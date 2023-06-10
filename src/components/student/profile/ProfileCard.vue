@@ -1,12 +1,14 @@
 <script setup async lang="ts">
-import getUser from 'src/utils/getUser';
 import { ref } from 'vue';
 import { UserInfo, CompanyInfo, StudentInfo } from 'components/models';
 import formatDate from '../../../utils/formatDate';
 import { api } from 'src/boot/axios';
 import { useRoleStore } from 'src/stores/role';
 import { UniversitiesInfo } from 'components/models';
+import { useUserStore } from 'src/stores/user';
 
+
+const userStore = useUserStore();
 const roleStore = useRoleStore();
 const userData = ref<UserInfo>({
   id: 0,
@@ -58,8 +60,8 @@ const universityData = ref<UniversitiesInfo>({
 })
 
 try {
-  const response = await getUser(localStorage.getItem('token'));
-  userData.value = { ...userData.value, ...response.data };
+  const response = await api(`users/${userStore.$state.userId}`);
+  userData.value = { ...userData.value, ...response.data.data };
 } catch (error) {
   throw (error);
 }

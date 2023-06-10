@@ -40,7 +40,7 @@ const toggleLeftDrawer = () => {
 
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="bg-white text-black">
+    <q-header class="bg-white text-black" bordered>
       <q-toolbar>
 
         <q-btn v-if="$q.screen.lt.md" flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="menu" />

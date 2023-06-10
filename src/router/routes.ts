@@ -142,6 +142,19 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/job/:id',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/jobs/JobDetailPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'JobDetail',
+        props: true,
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, email } from '@vuelidate/validators';
 import { api } from 'src/boot/axios';
 import axios from 'axios';
-import getUser from 'src/utils/getUser';
 import { useRouter } from 'vue-router';
 import LocationSelect from 'components/LocationSelect.vue';
 import { useSelectLocationStore } from 'src/stores/selectLocation';
+import { useUserStore } from 'stores/user';
 
 interface FormInfo {
   name: string,
@@ -29,21 +29,10 @@ const submitError = reactive<SubmitError>({
   isError: false,
   message: ''
 })
+const userStore = useUserStore();
 const router = useRouter();
-const loadUser = ref(true);
-const user = ref();
 const loading = ref(false);
 const selectLocationStore = useSelectLocationStore();
-
-onMounted(async () => {
-  try {
-    user.value = await getUser(localStorage.getItem('token'));
-  } catch (error) {
-    throw error
-  } finally {
-    loadUser.value = false;
-  }
-})
 
 const formData = reactive<FormInfo>({
   name: '',
@@ -81,7 +70,7 @@ const onSubmit = async () => {
         phone: formData.phone,
         email: formData.email,
         website: formData.website,
-        user_id: user.value.data.id,
+        user_id: userStore.$state.userId,
         regency: selectLocationStore.$state.regency?.name,
         district: selectLocationStore.$state.district?.name
       }, {
@@ -91,10 +80,7 @@ const onSubmit = async () => {
         }
       });
       try {
-        const response = await getUser(localStorage.getItem('token'));
-        const userData = response.data;
-        console.log(userData);
-        await api.patch(`users/update_role/${userData.id}`, { role: 'company' });
+        await api.patch(`users/update_role/${userStore.$state.userId}`, { role: 'company' });
         router.push('/')
       } catch (error) {
         throw error;
@@ -112,7 +98,6 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <q-linear-progress indeterminate v-if="loadUser" color="pink-4" />
   <div class="q-pa-md">
     <div class="row justify-center">
       <div class="col-md-7 col-sm-10">
@@ -151,7 +136,7 @@ const onSubmit = async () => {
 
               <div>
                 <q-btn label="Daftar" type="submit" color="primary" :loading="loading"
-                  :disable="$v?.$invalid || !formData.accept || loadUser" />
+                  :disable="$v?.$invalid || !formData.accept" />
               </div>
             </q-form>
           </q-card-section>
