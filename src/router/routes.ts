@@ -151,7 +151,25 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/jobs/JobDetailPage.vue'),
         meta: { requiresAuth: true },
         name: 'JobDetail',
-        props: true,
+      },
+    ],
+  },
+
+  {
+    path: '/application/',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('src/pages/applications/IndexPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'Application',
+      },
+      {
+        path: 'success',
+        component: () => import('src/pages/applications/SuccessPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'ApplicationSuccess',
       },
     ],
   },

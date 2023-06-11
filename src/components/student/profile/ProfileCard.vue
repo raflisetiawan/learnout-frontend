@@ -6,6 +6,7 @@ import { api } from 'src/boot/axios';
 import { useRoleStore } from 'src/stores/role';
 import { UniversitiesInfo } from 'components/models';
 import { useUserStore } from 'src/stores/user';
+import StudentProfile from './StudentProfile.vue';
 
 
 const userStore = useUserStore();
@@ -153,29 +154,7 @@ if (roleStore.$state.role === 'company') {
         </q-card>
       </div>
       <div class="col-md-5 q-ml-md" v-if="roleStore.$state.role === 'user'">
-        <div class="text-h5 q-mb-md">Informasi Mahasiswa</div>
-        <q-card class="my-card" flat bordered>
-          <q-card-section horizontal>
-            <q-card-section class="q-pt-xs">
-              <div class="text-overline">{{ studentData.name }}</div>
-              <p>{{ universityData.name }}</p>
-              <p>{{ studentData.phone }}</p>
-              <div class="text-caption text-grey">
-                <div>Alamat</div>
-                {{ studentData.address }}
-              </div>
-            </q-card-section>
-
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-actions>
-            <q-btn flat color="positive">
-              Edit Profile Mahasiswa
-            </q-btn>
-          </q-card-actions>
-        </q-card>
+        <StudentProfile :studentData="studentData" :universityData="universityData" />
       </div>
     </div>
   </div>

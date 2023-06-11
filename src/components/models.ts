@@ -129,3 +129,19 @@ export interface JobWithCompanyWithCategoriesInfo {
   company_id: number;
   categories: CategoryInfo[];
 }
+
+export interface ApplicationInfo {
+  id: number;
+  student_id: number;
+  joblisting_id: number;
+  cover_letter: string[] | File[] | FileList | null | undefined;
+  resume: string[] | File[] | FileList | null | undefined;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface SubmitError {
+  isError: boolean;
+  message: string;
+}

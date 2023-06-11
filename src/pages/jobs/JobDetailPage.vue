@@ -38,7 +38,7 @@ if (jobStore.$state.temporaryJob === null) {
           <div class="text-h4">{{ job?.title }}</div>
         </div>
         <div class="col-md-4 col-sm-6 col-sm-2">
-          <q-btn>Apply</q-btn>
+          <q-btn color="primary" :to="{ name: 'Application' }">Lamar</q-btn>
         </div>
       </div>
       <div class="text-overline">{{ job?.company.name }}</div>
