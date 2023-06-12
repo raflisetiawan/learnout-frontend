@@ -60,24 +60,19 @@ const universityData = ref<UniversitiesInfo>({
   regency: ''
 })
 
-try {
-  const response = await api(`users/${userStore.$state.userId}`);
-  userData.value = { ...userData.value, ...response.data.data };
-} catch (error) {
-  throw (error);
-}
-
 if (roleStore.$state.role === 'company') {
   try {
-    const response = await api.get(`companies/${userData.value.id}`);
+    const response = await api.get(`/users/getUserAndCompanyByUserId/${userStore.$state.userId}`);
+    userData.value = { ...userData.value, ...response.data.user }
     companyData.value = { ...companyData.value, ...response.data.data };
   } catch (error) {
     throw error
   }
 } else if (roleStore.$state.role === 'user') {
   try {
-    const response = await api.get(`students/${userData.value.id}`);
-    studentData.value = { ...studentData.value, ...response.data.data };
+    const response = await api.get(`/users/getUserAndStudentByUserId/${userStore.$state.userId}`);
+    userData.value = { ...userData.value, ...response.data.user }
+    studentData.value = { ...studentData.value, ...response.data.student };
     try {
       const response = await api.get(`universities/${studentData.value.university_id}`);
       universityData.value = { ...universityData.value, ...response.data.data };

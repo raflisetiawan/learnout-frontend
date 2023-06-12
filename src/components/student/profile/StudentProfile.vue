@@ -1,5 +1,15 @@
 <script setup lang="ts">
-defineProps(['universityData', 'studentData'])
+import { useRouter } from 'vue-router';
+import { useStudentStore } from 'stores/student';
+
+defineProps(['universityData', 'studentData']);
+const router = useRouter();
+const studentStore = useStudentStore();
+
+const redirectToHistoryApplicationPage = (studentId: string) => {
+  studentStore.$state.studentId = studentId;
+  router.push({ name: 'HistoryApplication' });
+}
 </script>
 <template>
   <div class="text-h5 q-mb-md">Informasi Mahasiswa</div>
@@ -23,7 +33,7 @@ defineProps(['universityData', 'studentData'])
       <q-btn flat color="positive">
         Edit Profile Mahasiswa
       </q-btn>
-      <q-btn flat color="info">
+      <q-btn flat color="info" @click="redirectToHistoryApplicationPage(studentData.id)">
         Lihat History Lamaran
       </q-btn>
     </q-card-actions>

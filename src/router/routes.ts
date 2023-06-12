@@ -173,6 +173,24 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/student/application',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/student/history/IndexPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'HistoryApplication',
+      },
+      {
+        path: ':id',
+        component: () => import('src/pages/applications/EditPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'EditHistoryApplication',
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

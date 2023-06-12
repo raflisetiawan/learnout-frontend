@@ -34,6 +34,7 @@ if (jobStore.$state.temporaryJob === null) {
       studentId.value = studentResponse.data.student_id;
       const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
       job.value = response.data.data;
+      console.log(job.value);
     } catch (error) {
       throw error;
       // Penanganan error jika diperlukan
@@ -44,6 +45,17 @@ if (jobStore.$state.temporaryJob === null) {
   });
 } else {
   job.value = jobStore.$state.temporaryJob;
+  onMounted(async () => {
+    try {
+      const studentResponse = await api.get(`/students/getStudentIdByUserId/${userStore.$state.userId}`);
+      studentId.value = studentResponse.data.student_id;
+    } catch (error) {
+      throw error;
+    } finally {
+      bar.value.stop();
+      loading.value = false;
+    }
+  })
 }
 
 const applicationForm = ref<ApplicationInfo>({
@@ -54,7 +66,8 @@ const applicationForm = ref<ApplicationInfo>({
   resume: [],
   status: '',
   student_id: 0,
-  updated_at: new Date()
+  updated_at: new Date(),
+  pending: ''
 })
 
 const rules = {
@@ -64,9 +77,6 @@ const rules = {
 const $v = useVuelidate(rules, applicationForm)
 
 const onSubmit = async () => {
-  let formData = new FormData();
-  formData.append('cover_letter', JSON.stringify(applicationForm.value.cover_letter));
-  formData.append('resume', JSON.stringify(applicationForm.value.resume));
   if (!$v.value.$invalid) {
     try {
       loading.value = true;
@@ -81,17 +91,18 @@ const onSubmit = async () => {
           'content-type': 'multipart/form-data',
         }
       });
-      router.push({ name: 'ApplicationSuccess' });
+      router.push({ name: 'HistoryApplication' });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.data.message !== undefined) {
           submitError.isError = true;
           submitError.message = error.response.data.message
+          throw error;
         } else {
           submitError.isError = true;
           submitError.message = 'Terjadi masalah, coba lagi';
+          throw error;
         }
-        throw new Error(error.response.data.message);
       } else {
         submitError.isError = true;
         submitError.message = 'Terjadi masalah, coba lagi'

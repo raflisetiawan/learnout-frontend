@@ -139,6 +139,35 @@ export interface ApplicationInfo {
   status: string;
   created_at: Date;
   updated_at: Date;
+  pending: string;
+}
+
+export interface JobWithCompanyInfo {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  regency: string;
+  district: string;
+  schedule: string;
+  start_time: string; //time hour minute
+  end_time: string; //time hour minute
+  category: CategoryInfo[];
+  created_at: Date;
+  updated_at: Date;
+  company: CompanyInfo;
+}
+
+export interface ApplicationWithJobListingAndCompanyInfo {
+  id: number;
+  student_id: number;
+  joblisting_id: number;
+  cover_letter: string[] | File[] | FileList | null | undefined;
+  resume: string[] | File[] | FileList | null | undefined;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+  joblisting: JobWithCompanyInfo;
 }
 
 export interface SubmitError {
