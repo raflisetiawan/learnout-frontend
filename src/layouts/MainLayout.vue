@@ -11,8 +11,10 @@ import AccordingSkill from 'src/components/student/AccordingSkill.vue';
 import { useRoleStore } from 'stores/role';
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { useUserStore } from 'src/stores/user';
 
 const router = useRouter();
+const userStore = useUserStore();
 const roleStore = useRoleStore();
 const $q = useQuasar();
 
@@ -25,6 +27,7 @@ const signOut = async () => {
     await api.get('signout');
     localStorage.removeItem('signedIn');
     localStorage.removeItem('token');
+    userStore.$state.userId = '';
     router.push({ name: 'SignIn' });
   } catch (error) {
     throw error;
@@ -36,6 +39,8 @@ const leftDrawerOpen = ref(false);
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+
 </script>
 
 <template>
@@ -59,7 +64,7 @@ const toggleLeftDrawer = () => {
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar>
-                  <img src="https://cdn.quasar.dev/img/avatar.png">
+                  <img :src="userStore.$state.userImage">
                 </q-avatar>
               </div>
             </template>
@@ -179,7 +184,8 @@ const toggleLeftDrawer = () => {
     </q-header>
 
     <q-page-container>
-      <RouterView />
+      <router-view>
+      </router-view>
       <!-- <div class="row justify-center">
         <div class="col-md-6">
           <SearchJob />

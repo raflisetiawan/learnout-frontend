@@ -34,14 +34,17 @@ export default route(function () {
   const userStore = useUserStore();
 
   Router.beforeEach(async (to, from, next) => {
-    if (localStorage.getItem('token')) {
-      try {
-        const response = await getRole(localStorage.getItem('token'));
-        userStore.$state.userId = response.data.data.id;
-        role = response.data.data.role;
-        roleStore.$state.role = role;
-      } catch (error) {
-        throw error;
+    if (!userStore.$state.userId) {
+      if (localStorage.getItem('token')) {
+        try {
+          const response = await getRole(localStorage.getItem('token'));
+          userStore.$state.userId = response.data.data.id;
+          userStore.$state.userImage = response.data.data.image;
+          role = response.data.data.role;
+          roleStore.$state.role = role;
+        } catch (error) {
+          throw error;
+        }
       }
     }
 
@@ -76,5 +79,4 @@ export default route(function () {
   return Router;
 });
 
-// Export the router instance separately
 export { Router };

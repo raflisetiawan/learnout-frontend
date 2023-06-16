@@ -153,6 +153,7 @@ const routes: RouteRecordRaw[] = [
         name: 'JobDetail',
       },
     ],
+    meta: { transition: 'fade' },
   },
 
   {

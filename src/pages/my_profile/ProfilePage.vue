@@ -9,12 +9,14 @@ const ProfileCard = defineAsyncComponent(() =>
 </script>
 
 <template>
-  <Suspense>
-    <ProfileCard />
-    <template #fallback>
-      <q-linear-progress indeterminate />
-    </template>
-  </Suspense>
+  <div>
+    <Suspense>
+      <ProfileCard />
+      <template #fallback>
+        <q-linear-progress indeterminate />
+      </template>
+    </Suspense>
+  </div>
 </template>
 
 

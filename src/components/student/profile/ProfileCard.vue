@@ -11,6 +11,7 @@ import StudentProfile from './StudentProfile.vue';
 
 const userStore = useUserStore();
 const roleStore = useRoleStore();
+const showEditDialog = ref(false);
 const userData = ref<UserInfo>({
   id: 0,
   createdAt: new Date(),
@@ -60,30 +61,67 @@ const universityData = ref<UniversitiesInfo>({
   regency: ''
 })
 
-if (roleStore.$state.role === 'company') {
-  try {
-    const response = await api.get(`/users/getUserAndCompanyByUserId/${userStore.$state.userId}`);
-    userData.value = { ...userData.value, ...response.data.user }
-    companyData.value = { ...companyData.value, ...response.data.data };
-  } catch (error) {
-    throw error
-  }
-} else if (roleStore.$state.role === 'user') {
-  try {
-    const response = await api.get(`/users/getUserAndStudentByUserId/${userStore.$state.userId}`);
-    userData.value = { ...userData.value, ...response.data.user }
-    studentData.value = { ...studentData.value, ...response.data.student };
+const getData = async () => {
+  if (roleStore.$state.role === 'company') {
     try {
-      const response = await api.get(`universities/${studentData.value.university_id}`);
-      universityData.value = { ...universityData.value, ...response.data.data };
+      const response = await api.get(`/users/getUserAndCompanyByUserId/${userStore.$state.userId}`);
+      userData.value = { ...userData.value, ...response.data.user }
+      companyData.value = { ...companyData.value, ...response.data.data };
     } catch (error) {
-      throw error;
+      throw error
     }
-  } catch (error) {
-    throw error
+  } else if (roleStore.$state.role === 'user') {
+    try {
+      const response = await api.get(`/users/getUserAndStudentByUserId/${userStore.$state.userId}`);
+      userData.value = { ...userData.value, ...response.data.user }
+      studentData.value = { ...studentData.value, ...response.data.student };
+      try {
+        const response = await api.get(`universities/${studentData.value.university_id}`);
+        universityData.value = { ...universityData.value, ...response.data.data };
+      } catch (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw error
+    }
   }
 }
 
+await getData();
+
+const loadingUpdate = ref(false);
+
+
+interface UpdateForm {
+  name: string;
+  image: string[] | File[] | FileList | null | undefined;
+}
+
+const updateForm = ref<UpdateForm>({
+  name: '',
+  image: null
+})
+
+const onUpdateProfile = async () => {
+  loadingUpdate.value = true;
+  try {
+    const response = await api.post(`/users/updateImageAndName/${userData.value.id}`, { name: updateForm.value.name, image: updateForm.value.image, _method: 'PATCH' }, {
+      headers: { 'content-type': 'multipart/form-data' }
+    });
+    await getData();
+    userStore.$state.userImage = response.data.image;
+  } catch (error) {
+    throw error;
+  } finally {
+    loadingUpdate.value = false;
+    showEditDialog.value = false;
+    updateForm.value = { name: '', image: null };
+  }
+}
+
+const handleImageError = () => {
+  userData.value.image += '/user.png';
+}
 
 </script>
 <template>
@@ -105,9 +143,8 @@ if (roleStore.$state.role === 'company') {
             </q-card-section>
 
             <q-card-section class="col-5 flex flex-center">
-              <!-- v-if="userData.image" -->
-              <q-avatar size="100px">
-                <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" />
+              <q-avatar size="100px" v-if="userData.image !== null">
+                <q-img :src="userData.image" @error="handleImageError" />
               </q-avatar>
             </q-card-section>
           </q-card-section>
@@ -115,7 +152,7 @@ if (roleStore.$state.role === 'company') {
           <q-separator />
 
           <q-card-actions>
-            <q-btn flat color="positive">
+            <q-btn flat color="positive" @click="showEditDialog = true">
               Edit Profile User
             </q-btn>
           </q-card-actions>
@@ -152,6 +189,33 @@ if (roleStore.$state.role === 'company') {
         <StudentProfile :studentData="studentData" :universityData="universityData" />
       </div>
     </div>
+
+    <q-dialog v-model="showEditDialog" persistent>
+      <q-card style="min-width: 350px">
+        <q-form @submit="onUpdateProfile" enctype="multipart/form-data">
+          <q-card-section>
+            <div class="text-h6">Edit User Profile</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <q-input label="Nama user" dense v-model="updateForm.name" autofocus class="q-mb-md"
+              :rules="[val => val && val.length > 0 || 'Please type something']" />
+            <q-file dense outlined v-model="updateForm.image" label="Edit gambar profile"
+              accept=".png, .jpg, .jfif, image/jpeg">
+              <template v-slot:prepend>
+                <q-icon name="photo_camera" />
+              </template>
+            </q-file>
+
+          </q-card-section>
+
+          <q-card-actions align="right" class="text-primary">
+            <q-btn flat label="Cancel" v-close-popup />
+            <q-btn flat label="Edit" type="submit" :loading="loadingUpdate" />
+          </q-card-actions>
+        </q-form>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 

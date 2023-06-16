@@ -8,6 +8,7 @@ import { useRouter } from 'vue-router';
 import LocationSelect from 'components/LocationSelect.vue';
 import { useSelectLocationStore } from 'src/stores/selectLocation';
 import { useUserStore } from 'stores/user';
+import { useRoleStore } from 'src/stores/role';
 
 interface FormInfo {
   name: string,
@@ -29,6 +30,7 @@ const submitError = reactive<SubmitError>({
   isError: false,
   message: ''
 })
+const roleStore = useRoleStore();
 const userStore = useUserStore();
 const router = useRouter();
 const loading = ref(false);
@@ -81,6 +83,7 @@ const onSubmit = async () => {
       });
       try {
         await api.patch(`users/update_role/${userStore.$state.userId}`, { role: 'company' });
+        roleStore.$state.role = 'company';
         router.push('/')
       } catch (error) {
         throw error;

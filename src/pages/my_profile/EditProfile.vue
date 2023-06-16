@@ -1,3 +1,3 @@
 <template>
-  <RouterView />
+  <h1>Halo</h1>
 </template>

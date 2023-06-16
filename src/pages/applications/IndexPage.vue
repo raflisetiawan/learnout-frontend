@@ -34,12 +34,10 @@ if (jobStore.$state.temporaryJob === null) {
       studentId.value = studentResponse.data.student_id;
       const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
       job.value = response.data.data;
-      console.log(job.value);
     } catch (error) {
       throw error;
-      // Penanganan error jika diperlukan
     } finally {
-      bar.value.stop(); // Menghentikan AJAX bar setelah permintaan selesai
+      bar.value.stop();
       loading.value = false;
     }
   });
