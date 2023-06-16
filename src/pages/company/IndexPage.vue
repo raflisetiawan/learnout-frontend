@@ -15,7 +15,7 @@
 
           <q-card-actions>
             <q-btn flat :to="{ name: 'CreateJob' }">Posting Pekerjaan</q-btn>
-            <q-btn flat>List Postingan Pekerjaan</q-btn>
+            <q-btn flat :to="{ name: 'ListJob' }">List Postingan Pekerjaan</q-btn>
           </q-card-actions>
         </q-card>
       </div>

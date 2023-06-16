@@ -88,6 +88,23 @@ export interface CategoryInfo {
   label: string;
 }
 
+export interface StudentsInfo {
+  id: number;
+  user_id: number;
+  name: string;
+  address: string;
+  phone: string;
+  regency: string;
+  district: string;
+  university_id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface ApplicationItem {
+  student: StudentsInfo;
+  created_at: string; // Assuming created_at is a string representing a date
+}
 export interface StudentInfo {
   id: number;
   userId: number;

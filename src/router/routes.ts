@@ -127,6 +127,30 @@ const routes: RouteRecordRaw[] = [
         name: 'CreateJob',
         meta: { requiresCompany: true },
       },
+      {
+        path: 'job',
+        component: () => import('pages/company/job/IndexPage.vue'),
+        name: 'ListJob',
+        meta: { requiresCompany: true },
+      },
+      {
+        path: 'job/:id',
+        component: () => import('pages/company/job/DetailPage.vue'),
+        name: 'DetailJob',
+        meta: { requiresCompany: true },
+      },
+      {
+        path: 'job/edit/:id',
+        component: () => import('pages/company/job/CompanyEditPage.vue'),
+        name: 'CompanyEditJob',
+        meta: { requiresCompany: true },
+      },
+      {
+        path: 'job/student-application-list/:id',
+        component: () => import('pages/company/job/ApplicationStudentList.vue'),
+        name: 'StudentApplicationList',
+        meta: { requiresCompany: true },
+      },
     ],
   },
 

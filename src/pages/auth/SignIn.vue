@@ -4,7 +4,8 @@ import { useVuelidate } from '@vuelidate/core';
 import { email, required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { api } from 'boot/axios'
+import { api } from 'boot/axios';
+import { useCompanyStore } from 'src/stores/company';
 
 
 interface FormState {
@@ -16,6 +17,7 @@ interface SignInError {
   message: string
 }
 
+const companyStore = useCompanyStore();
 const router = useRouter();
 const loading = ref(false);
 const form = reactive<FormState>({
@@ -48,6 +50,8 @@ const onSubmit = async (): Promise<void> => {
       localStorage.setItem('signedIn', 'true');
       localStorage.setItem('token', response.data.token);
       if (response.data.user.role === 'company') {
+        const responseCompany = await api.get(`companies/getOneCompanyByUserId/${response.data.user.id}`)
+        companyStore.$state.companyId = responseCompany.data.company.id;
         router.push({ name: 'Company' });
       } else if (response.data.user.role === 'admin') {
         router.push({ name: 'Admin' });
@@ -55,7 +59,6 @@ const onSubmit = async (): Promise<void> => {
         router.push('/');
       }
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 401) {
           signInError.isError = true;

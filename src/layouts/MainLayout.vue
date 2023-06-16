@@ -40,6 +40,9 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+const handleImageError = () => {
+  userStore.$state.userImage += '/user.png';
+}
 
 </script>
 
@@ -64,7 +67,7 @@ const toggleLeftDrawer = () => {
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar>
-                  <img :src="userStore.$state.userImage">
+                  <img :src="userStore.$state.userImage" @error="handleImageError">
                 </q-avatar>
               </div>
             </template>
