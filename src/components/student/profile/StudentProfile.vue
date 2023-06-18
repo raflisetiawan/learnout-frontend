@@ -30,7 +30,7 @@ const redirectToHistoryApplicationPage = (studentId: string) => {
     <q-separator />
 
     <q-card-actions>
-      <q-btn flat color="positive">
+      <q-btn flat color="positive" :to="{ name: 'EditStudent' }">
         Edit Profile Mahasiswa
       </q-btn>
       <q-btn flat color="info" @click="redirectToHistoryApplicationPage(studentData.id)">

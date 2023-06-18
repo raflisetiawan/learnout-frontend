@@ -12,6 +12,7 @@ import { useRoleStore } from 'stores/role';
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useUserStore } from 'src/stores/user';
+import isAuthenticated from 'src/utils/isAuthenticated';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -44,11 +45,12 @@ const handleImageError = () => {
   userStore.$state.userImage += '/user.png';
 }
 
+
 </script>
 
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="bg-white text-black" bordered>
+    <q-header class="bg-white text-black" bordered v-if="isAuthenticated()">
       <q-toolbar>
 
         <q-btn v-if="$q.screen.lt.md" flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="menu" />
@@ -62,12 +64,12 @@ const handleImageError = () => {
           <q-btn flat dense>Lowongan</q-btn>
           <q-btn flat dense>Kategori</q-btn>
           <q-btn flat dense>Tentang Kami</q-btn>
-          <q-btn flat dense>Kontak</q-btn>
+          <q-btn flat dense to="/contact">Kontak</q-btn>
           <q-btn-dropdown flat dense rounded>
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar>
-                  <img :src="userStore.$state.userImage" @error="handleImageError">
+                  <img :src="userStore.$state.userImage" v-if="userStore.$state.userId !== ''" @error="handleImageError">
                 </q-avatar>
               </div>
             </template>
@@ -184,6 +186,23 @@ const handleImageError = () => {
         </q-list>
       </q-drawer>
 
+    </q-header>
+    <q-header class="bg-white text-black" v-else bordered>
+      <q-toolbar>
+
+        <q-toolbar-title class="text-black q-ml-md">
+          <router-link style="text-decoration: none; color: black;" to="/">Learnout</router-link>
+        </q-toolbar-title>
+
+        <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
+          <q-btn flat dense>Home</q-btn>
+          <q-btn flat dense>Lowongan</q-btn>
+          <q-btn flat dense>Kategori</q-btn>
+          <q-btn flat dense>Tentang Kami</q-btn>
+          <q-btn flat dense :to="{ name: 'ContactPage' }">Kontak</q-btn>
+          <q-btn :to="{ name: 'SignUp' }" color="primary">Daftar</q-btn>
+        </div>
+      </q-toolbar>
     </q-header>
 
     <q-page-container>

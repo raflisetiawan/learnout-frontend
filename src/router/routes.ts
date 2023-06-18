@@ -12,6 +12,17 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/contact',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/ContactPage.vue'),
+        name: 'ContactPage',
+      },
+    ],
+  },
 
   {
     path: '/signin',
@@ -213,6 +224,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/applications/EditPage.vue'),
         meta: { requiresAuth: true },
         name: 'EditHistoryApplication',
+      },
+    ],
+  },
+  {
+    path: '/student/edit',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/student/EditPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'EditStudent',
       },
     ],
   },
