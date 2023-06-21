@@ -175,6 +175,12 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
         name: 'MyProfile',
       },
+      {
+        path: 'student/:id',
+        component: () => import('src/pages/student/DetailPage.vue'),
+        meta: { requiresAuth: true },
+        name: 'StudentDetailProfile',
+      },
     ],
   },
   {
@@ -236,6 +242,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/student/EditPage.vue'),
         meta: { requiresAuth: true },
         name: 'EditStudent',
+      },
+    ],
+  },
+  {
+    path: '/student/resume/create',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/student/resume/CreatePage.vue'),
+        meta: { requiresAuth: true },
+        name: 'CreateResumeStudent',
       },
     ],
   },

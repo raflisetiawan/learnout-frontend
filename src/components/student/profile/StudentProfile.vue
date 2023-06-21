@@ -10,6 +10,20 @@ const redirectToHistoryApplicationPage = (studentId: string) => {
   studentStore.$state.studentId = studentId;
   router.push({ name: 'HistoryApplication' });
 }
+
+const redirectToCreateResumeStudentPage = (studentId: string) => {
+  studentStore.$state.studentId = studentId;
+  router.push({ name: 'CreateResumeStudent' })
+}
+
+const redirectToStudentDetailPage = (studentId: string) => {
+  studentStore.$state.studentId = studentId;
+  router.push({
+    name: 'StudentDetailProfile', params: {
+      id: studentStore.$state.studentId
+    }
+  })
+}
 </script>
 <template>
   <div class="text-h5 q-mb-md">Informasi Mahasiswa</div>
@@ -35,6 +49,12 @@ const redirectToHistoryApplicationPage = (studentId: string) => {
       </q-btn>
       <q-btn flat color="info" @click="redirectToHistoryApplicationPage(studentData.id)">
         Lihat History Lamaran
+      </q-btn>
+      <q-btn flat color="info" @click="redirectToCreateResumeStudentPage(studentData.id)">
+        Tambahkan Daftar Riwayat Hidup
+      </q-btn>
+      <q-btn flat color="info" @click="redirectToStudentDetailPage(studentData.id)">
+        Tambahkan Daftar Riwayat Hidup
       </q-btn>
     </q-card-actions>
   </q-card>
