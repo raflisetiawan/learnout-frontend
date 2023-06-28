@@ -12,6 +12,7 @@ import { useCompanyStore } from 'src/stores/company';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const bar = ref();
 const formJob = ref<JobWithCompanyWithCategoriesInfo>({
   id: 0,
   title: '',
@@ -19,9 +20,10 @@ const formJob = ref<JobWithCompanyWithCategoriesInfo>({
   location: '',
   regency: '',
   district: '',
-  end_time: '10:56',
+  end_time: '16:00',
   schedule: '',
-  start_time: '10:56',
+  start_time: '10:00',
+  province: '',
   categories: [],
   created_at: new Date(),
   updated_at: new Date(),
@@ -54,16 +56,43 @@ onMounted(async () => {
   loadingSelectCategory.value = true;
   if (companyStore.$state.companyId === 0) {
     try {
+      bar.value.start();
       const responseCompany = await api.get(`companies/getOneCompanyByUserId/${userStore.$state.userId}`)
       companyStore.$state.companyId = responseCompany.data.company.id;
       companyId.value = responseCompany.data.company.id;
       const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
       formJob.value = response.data.data;
-      console.log(formJob.value);
+      formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
+        id: category.id,
+        name: category.name,
+        value: category.id,
+        label: category.name,
+      }));
+      selectLocationStore.$state.province = {
+        id: 0,
+        name: formJob.value.province,
+        value: 0,
+        label: formJob.value.province,
+      };
+      selectLocationStore.$state.district = {
+        id: 0,
+        name: formJob.value.district,
+        value: 0,
+        label: formJob.value.district,
+      };
+      selectLocationStore.$state.regency = {
+        id: 0,
+        name: formJob.value.regency,
+        value: 0,
+        label: formJob.value.regency,
+      };
     } catch (error) {
       throw error;
+    } finally {
+      bar.value.stop();
     }
   } else {
+    bar.value.start();
     companyId.value = companyStore.$state.companyId;
     try {
       const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
@@ -90,10 +119,35 @@ onMounted(async () => {
         value: category.id
       });
     })
+    formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
+      id: category.id,
+      name: category.name,
+      value: category.id,
+      label: category.name,
+    }));
+    selectLocationStore.$state.province = {
+      id: 0,
+      name: formJob.value.province,
+      value: 0,
+      label: formJob.value.province,
+    };
+    selectLocationStore.$state.district = {
+      id: 0,
+      name: formJob.value.district,
+      value: 0,
+      label: formJob.value.district,
+    };
+    selectLocationStore.$state.regency = {
+      id: 0,
+      name: formJob.value.regency,
+      value: 0,
+      label: formJob.value.regency,
+    };
   } catch (error) {
     throw error
   } finally {
     loadingSelectCategory.value = false;
+    bar.value.stop();
   }
 })
 
@@ -115,6 +169,7 @@ const onSubmit = async () => {
       description: formJob.value.description,
       location: formJob.value.location,
       regency: selectLocationStore.$state.regency?.name,
+      province: selectLocationStore.$state.province?.name,
       district: selectLocationStore.$state.district?.name,
       end_time: `${formJob.value.end_time}:00`,
       schedule: formJob.value.schedule,
@@ -148,10 +203,11 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
 </script>
 <template>
   <div class="q-pa-md">
+    <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
     <div class="row justify-center">
       <div class="col-md-7">
         <q-card class="my-card">
-          <div class="text-h4 text-center q-mt-md">Posting Pekerjaan</div>
+          <div class="text-h4 text-center q-mt-md">Edit Pekerjaan</div>
           <q-card-section>
             <q-form @submit="onSubmit" class="q-gutter-md">
               <q-input filled v-model="formJob.title" label="Judul Pekerjaan" lazy-rules :error="$v.title.$error"
@@ -161,7 +217,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
               <q-input filled autogrow v-model="formJob.location" label="Alamat Lengkap Tempat Kerja" lazy-rules
                 :error="$v.location.$error" :error-message="$v.location.$errors.map((e) => e.$message).join()"
                 @input="$v.location.$touch" @blur="$v.location.$touch" />
-              <LocationSelect />
+              <LocationSelect :is-edit="true" />
               <q-input filled v-model="formJob.schedule" label="Jadwal Hari kerja" hint="Contoh: Senin - Jum'at"
                 lazy-rules :error="$v.schedule.$error" :error-message="$v.schedule.$errors.map((e) => e.$message).join()"
                 @input="$v.schedule.$touch" @blur="$v.schedule.$touch" />

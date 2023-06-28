@@ -20,7 +20,12 @@ const WorkAround = defineAsyncComponent(() =>
           <SearchJob />
         </div>
         <div class="col-md-1">
-          <FilterJob />
+          <Suspense>
+            <FilterJob />
+            <template #fallback>
+              filter
+            </template>
+          </Suspense>
         </div>
       </div>
       <Suspense>

@@ -58,7 +58,8 @@ const universityData = ref<UniversitiesInfo>({
   district: '',
   location: '',
   name: '',
-  regency: ''
+  regency: '',
+  province: ''
 })
 
 const getData = async () => {

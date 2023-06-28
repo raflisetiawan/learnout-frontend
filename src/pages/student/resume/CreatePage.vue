@@ -12,6 +12,7 @@ const studentId = ref();
 const resume = ref('Daftar Riwayat Hidup');
 const loading = ref(false);
 const router = useRouter();
+const curriculum_vitae = ref();
 
 if (!studentStore.$state.studentId) {
   onMounted(async () => {
@@ -42,9 +43,15 @@ if (!studentStore.$state.studentId) {
 }
 
 const onSubmit = async () => {
+  console.log(curriculum_vitae.value);
   try {
     loading.value = true;
-    await api.patch(`/students/updateResumeStudent/${studentId.value}`, { resume: resume.value });
+    const response = await api.post(`/students/updateResumeStudent/${studentId.value}`, { resume: resume.value, curriculum_vitae: curriculum_vitae.value, _method: 'PATCH' }, {
+      headers: {
+        'content-type': 'multipart/form-data',
+      }
+    });
+    console.log(response);
     router.push({ name: 'MyProfile' });
   } catch (error) {
     throw error;
@@ -60,8 +67,8 @@ const onSubmit = async () => {
     <div class="q-pa-md">
       <div class="text-h4">Buat Daftar Riwayat Hidup</div>
       <div class="row">
-        <div class="col-md-9">
-          <q-form @submit="onSubmit" class=" q-gutter-md">
+        <div class="col-md-9 col-sm-10 col-xs-12">
+          <q-form @submit="onSubmit" class=" q-gutter-md" enctype="multipart/form-data">
             <q-editor v-model="resume" :dense="$q.screen.lt.md" :toolbar="[
               [
                 {
@@ -147,6 +154,12 @@ const onSubmit = async () => {
   verdana: 'Verdana'
 }" />
             <div>
+              <q-file outlined v-model="curriculum_vitae" class="q-my-md" label="Upload curriculum_vitae"
+                accept=".pdf,.docx,.txt" max-file-size="5242880">
+                <template v-slot:prepend>
+                  <q-icon name="attach_file" />
+                </template>
+              </q-file>
               <q-btn label="Submit" type="submit" color="primary" :loading="loading" />
             </div>
           </q-form>

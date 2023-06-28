@@ -17,6 +17,8 @@ interface FormInfo {
   categories: CategoryInfo[];
   district: string;
   regency: string;
+  province: string;
+  resume: string;
 }
 
 interface SubmitError {
@@ -77,6 +79,8 @@ const formData = reactive<FormInfo>({
   categories: [],
   district: '',
   regency: '',
+  province: '',
+  resume: ''
 });
 const studentId = ref();
 
@@ -119,6 +123,8 @@ onMounted(async () => {
     formData.phone = studentData.phone;
     formData.regency = studentData.regency;
     formData.district = studentData.district;
+    formData.province = studentData.province;
+    formData.resume = studentData.resume;
     formData.university = {
       id: studentData.university.id,
       name: studentData.university.name,
@@ -132,6 +138,12 @@ onMounted(async () => {
       value: category.id,
       label: category.name,
     }));
+    selectLocationStore.$state.province = {
+      id: 0,
+      name: formData.province,
+      value: 0,
+      label: formData.province,
+    };
     selectLocationStore.$state.district = {
       id: 0,
       name: formData.district,
@@ -193,22 +205,23 @@ const onSubmit = async () => {
   if (!$v.value.$invalid) {
     loading.value = true;
     try {
-      const response = await api.patch(`students/${studentId.value}`, {
+      await api.patch(`students/${studentId.value}`, {
         name: formData.fullName,
         address: formData.address,
         phone: formData.phone,
+        resume: formData.resume,
         user_id: userStore.$state.userId,
         university_id: formData.university?.id,
         categories: formData.categories.map((category) => category.id),
         regency: selectLocationStore.$state.regency?.name,
         district: selectLocationStore.$state.district?.name,
+        province: selectLocationStore.$state.province?.name,
       }, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
       });
-      console.log(response);
       router.push({ name: 'MyProfile' });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -232,7 +245,7 @@ const onSubmit = async () => {
   <div class="q-pa-md">
     <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
     <div class="row justify-center">
-      <div class="col-md-7 col-sm-10">
+      <div class="col-md-7 col-sm-10 col-xs-12">
         <q-card class="my-card q-pt-md">
           <div class="text-h6 text-center">Edit Data mahasiswa</div>
           <q-banner inline-actions :class="submitError.isError ? `text-white bg-red` : `text-white bg-red hidden`" rounded
@@ -275,10 +288,91 @@ const onSubmit = async () => {
                   </q-item>
                 </template>
               </q-select>
-              <LocationSelect :isEdit="true" />
-              <p class="text-caption">Kota / Kabupaten: {{ selectLocationStore.$state.regency?.name }}</p>
-              <p class="text-caption">Kecamatan: {{ selectLocationStore.$state.district?.name }}</p>
-              <p class="text-caption">Klik provinsi jika ingin mengubah tempat</p>
+              <LocationSelect :is-edit="true" />
+              <q-editor v-model="formData.resume" :dense="$q.screen.lt.md" :toolbar="[
+                [
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    list: 'only-icons',
+                    options: ['left', 'center', 'right', 'justify']
+                  },
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    options: ['left', 'center', 'right', 'justify']
+                  }
+                ],
+                ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+                ['token', 'hr', 'link', 'custom_btn'],
+                ['print', 'fullscreen'],
+                [
+                  {
+                    label: $q.lang.editor.formatting,
+                    icon: $q.iconSet.editor.formatting,
+                    list: 'no-icons',
+                    options: [
+                      'p',
+                      'h1',
+                      'h2',
+                      'h3',
+                      'h4',
+                      'h5',
+                      'h6',
+                      'code'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.fontSize,
+                    icon: $q.iconSet.editor.fontSize,
+                    fixedLabel: true,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'size-1',
+                      'size-2',
+                      'size-3',
+                      'size-4',
+                      'size-5',
+                      'size-6',
+                      'size-7'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.defaultFont,
+                    icon: $q.iconSet.editor.font,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'default_font',
+                      'arial',
+                      'arial_black',
+                      'comic_sans',
+                      'courier_new',
+                      'impact',
+                      'lucida_grande',
+                      'times_new_roman',
+                      'verdana'
+                    ]
+                  },
+                  'removeFormat'
+                ],
+                ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+                ['undo', 'redo'],
+                ['viewsource']
+              ]" :fonts="{
+  arial: 'Arial',
+  arial_black: 'Arial Black',
+  comic_sans: 'Comic Sans MS',
+  courier_new: 'Courier New',
+  impact: 'Impact',
+  lucida_grande: 'Lucida Grande',
+  times_new_roman: 'Times New Roman',
+  verdana: 'Verdana'
+}" />
               <div>
                 <q-btn label="Edit" type="submit" color="primary" :disable="$v?.$invalid" :loading="loading" />
               </div>

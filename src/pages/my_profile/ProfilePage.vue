@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 
 const ProfileCard = defineAsyncComponent(() =>
   import('components/student/profile/ProfileCard.vue')

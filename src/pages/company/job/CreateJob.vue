@@ -8,6 +8,7 @@ import { api } from 'src/boot/axios';
 import { useSelectLocationStore } from 'src/stores/selectLocation';
 import { useQuasar } from 'quasar';
 import { useUserStore } from 'stores/user';
+import { useRouter } from 'vue-router';
 
 const formJob = reactive<JobInfo>({
   id: 0,
@@ -16,9 +17,9 @@ const formJob = reactive<JobInfo>({
   location: '',
   regency: '',
   district: '',
-  end_time: '10:56',
+  end_time: '10:00',
   schedule: '',
-  start_time: '10:56',
+  start_time: '16:00',
   category: [],
   created_at: new Date(),
   updated_at: new Date()
@@ -28,6 +29,7 @@ const companyId = ref();
 const categories = reactive<CategoryInfo[]>([]);
 const loadingSelectCategory = ref(false);
 const userStore = useUserStore();
+const router = useRouter();
 
 onMounted(async () => {
   loadingSelectCategory.value = true;
@@ -49,6 +51,7 @@ onMounted(async () => {
         value: category.id
       });
     })
+
   } catch (error) {
     throw error
   } finally {
@@ -69,11 +72,12 @@ const $v = useVuelidate(rules, formJob)
 
 const onSubmit = async () => {
   try {
-    const response = await api.post('jobs', {
+    await api.post('jobs', {
       title: formJob.title,
       description: formJob.description,
       location: formJob.location,
       regency: selectLocationStore.$state.regency?.name,
+      province: selectLocationStore.$state.province?.name,
       district: selectLocationStore.$state.district?.name,
       end_time: `${formJob.end_time}:00`,
       schedule: formJob.schedule,
@@ -81,7 +85,7 @@ const onSubmit = async () => {
       categories: formJob.category.map((category) => category.id),
       company_id: companyId.value
     })
-    console.log(response);
+    router.push({ name: 'ListJob' })
   } catch (error) {
     throw error;
   }
@@ -108,7 +112,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
 <template>
   <div class="q-pa-md">
     <div class="row justify-center">
-      <div class="col-md-7">
+      <div class="col-md-7 col-sm-10 col-xs-12">
         <q-card class="my-card">
           <div class="text-h4 text-center q-mt-md">Posting Pekerjaan</div>
           <q-card-section>

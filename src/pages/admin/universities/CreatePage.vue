@@ -43,7 +43,7 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     loading.value = true;
     try {
-      await api.post('universities', { name: form.name, location: form.location, regency: selectLocationStore.$state.regency?.name, district: selectLocationStore.$state.district?.name })
+      await api.post('universities', { name: form.name, location: form.location, province: selectLocationStore.$state.province?.name, regency: selectLocationStore.$state.regency?.name, district: selectLocationStore.$state.district?.name })
       router.push({ name: 'Universities' })
     } catch (error) {
       throw error

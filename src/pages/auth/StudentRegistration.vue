@@ -173,6 +173,7 @@ const onSubmit = async () => {
         university_id: formData.university?.id,
         categories: formData.category.map((category) => category.id),
         regency: selectLocationStore.$state.regency?.name,
+        province: selectLocationStore.$state.province?.name,
         district: selectLocationStore.$state.district?.name
       }, {
         headers: {

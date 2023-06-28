@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import WorkAround from 'components/student/WorkAround.vue';
-import FilterJob from 'components/student/FilterJob.vue';
-import SearchJob from './SearchJob.vue';
-import ProcessSection from 'components/company_profile/ProcessSection.vue';
-import SocialProofSection from 'components/company_profile/SocialProofSection.vue';
-import FooterSection from 'components/FooterSection.vue';
 import { api } from 'src/boot/axios';
 import { useRouter } from 'vue-router';
-import AccordingSkill from 'src/components/student/AccordingSkill.vue';
 import { useRoleStore } from 'stores/role';
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
@@ -61,7 +54,7 @@ const handleImageError = () => {
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
           <q-btn flat dense>Home</q-btn>
-          <q-btn flat dense>Lowongan</q-btn>
+          <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
           <q-btn flat dense>Kategori</q-btn>
           <q-btn flat dense>Tentang Kami</q-btn>
           <q-btn flat dense to="/contact">Kontak</q-btn>
@@ -143,7 +136,7 @@ const handleImageError = () => {
               <q-item-label>Beranda Admin</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item clickable>
+          <q-item clickable :to="{ name: 'AllJob' }">
             <q-item-section avatar>
               <q-icon name="fa-solid fa-list" />
             </q-item-section>

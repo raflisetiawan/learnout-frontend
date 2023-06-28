@@ -74,6 +74,7 @@ const onSubmit = async () => {
         website: formData.website,
         user_id: userStore.$state.userId,
         regency: selectLocationStore.$state.regency?.name,
+        province: selectLocationStore.$state.province?.name,
         district: selectLocationStore.$state.district?.name
       }, {
         headers: {

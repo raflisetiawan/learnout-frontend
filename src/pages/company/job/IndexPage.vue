@@ -6,6 +6,7 @@ import { useCompanyStore } from 'src/stores/company';
 import { JobWithCompanyWithCategoriesInfo } from 'src/components/models';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useQuasar } from 'quasar';
 
 const loadingDeleteDialog = ref(false);
 const showDeleteDialog = ref(false);
@@ -17,6 +18,7 @@ const userStore = useUserStore();
 const companyStore = useCompanyStore();
 const companyId = ref();
 const jobs = ref<JobWithCompanyWithCategoriesInfo[]>([]);
+const $q = useQuasar();
 
 const getData = async () => {
   if (companyStore.$state.companyId === 0) {
@@ -62,13 +64,34 @@ const onDeleteJob = async () => {
     showDeleteDialog.value = false;
   }
 }
+
+const onClose = async (id: number, title: string) => {
+  $q.dialog({
+    title: 'Konfirmasi',
+    message: `Apakah anda ingin menutup lamaran pekerjaan ${title}`,
+    cancel: true,
+    persistent: true
+  }).onOk(async () => {
+    try {
+      await api.patch(`jobs/close/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }).onCancel(() => {
+    // console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+
+}
 </script>
 
 <template>
   <div class="q-pa-md">
+    <q-btn color="primary" :to="{ name: 'HistoryJobCompany' }">History Pekerjaan</q-btn>
     <div class="row justify-center">
       <template v-for="job in jobs" :key="job.id">
-        <div class="col-4">
+        <div class="col-md-4 col-sm-10 col-xs-12">
           <q-card class="my-card q-ma-md">
             <q-card-section>
               <div class="text-h6">{{ job.title }}</div>
@@ -99,6 +122,11 @@ const onDeleteJob = async () => {
                 }
               }">
                 Lihat Pendaftar
+              </q-btn>
+              <q-btn color="red" icon="close" @click="onClose(job.id, job.title)">
+                <q-tooltip>
+                  Tutup Pelamaran kerja
+                </q-tooltip>
               </q-btn>
             </q-card-actions>
           </q-card>

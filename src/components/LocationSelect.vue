@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { api } from 'src/boot/axios';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watchEffect } from 'vue';
 import { useSelectLocationStore } from 'stores/selectLocation';
 import { ProvincesInfo, RegenciesInfo } from 'components/models'
 import { ValidationRule } from 'quasar';
@@ -37,37 +37,39 @@ const locationStore = useSelectLocationStore();
 const provinces = reactive<ProvincesInfo[]>([]);
 const regencies = reactive<RegenciesInfo[]>([]);
 const districts = reactive<DistrictInfo[]>([]);
+const filteredProvinces = ref();
+const filteredRegencies = ref();
 
 const selectLocationStore = useSelectLocationStore();
 
 onMounted(async () => {
+  if (!props.isEdit) selectLocationStore.$state.province = null;
   locationStore.removeLocationValues();
   try {
-    const repsonseProvinces = await api.get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
-    provinces.splice(0, provinces.length, ...repsonseProvinces.data.map((province: ProvinceInfo) => {
-      return {
-        id: province.id,
-        name: province.name,
-        value: province.id, // Set the desired value for the value property
-        label: province.name // Set the desired value for the label property
-      };
+    const responseProvinces = await api.get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
+    const provincesData = responseProvinces.data.map((province: ProvinceInfo) => ({
+      id: province.id,
+      name: province.name,
+      value: province.id,
+      label: province.name
     }));
+    provinces.splice(0, provinces.length, ...provincesData);
     loadingSelectProvinces.value = false;
   } catch (error) {
-    throw error
+    throw error;
   } finally {
     loadingSelectProvinces.value = false;
   }
+});
 
-})
+
 
 const getRegencies = async () => {
-  loadingSelectRegencies.value = true;
-  locationStore.removeLocationValues();
-  if (selectLocationStore.$state.province !== null) {
-    showSelectRegencies.value = true;
+  if (selectLocationStore.$state.province?.id === 0) {
+    loadingSelectRegencies.value = true;
     try {
-      const responseRegencies = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectLocationStore.$state.province?.id}.json`)
+      showSelectRegencies.value = true;
+      const responseRegencies = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${filteredProvinces.value.id}.json`)
       regencies.splice(0, regencies.length, ...responseRegencies.data.map((regency: RegencyInfo) => {
         return {
           id: regency.id,
@@ -76,20 +78,41 @@ const getRegencies = async () => {
           label: regency.name // Set the desired value for the label property
         };
       }));
+
     } catch (error) {
-      throw error;
+      throw error
     } finally {
       loadingSelectRegencies.value = false;
+    }
+  } else {
+    if (selectLocationStore.$state.province !== null) {
+      showSelectRegencies.value = true;
+      loadingSelectRegencies.value = true;
+      try {
+        const responseRegencies = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectLocationStore.$state.province?.id}.json`)
+        regencies.splice(0, regencies.length, ...responseRegencies.data.map((regency: RegencyInfo) => {
+          return {
+            id: regency.id,
+            name: regency.name,
+            value: regency.id, // Set the desired value for the value property
+            label: regency.name // Set the desired value for the label property
+          };
+        }));
+      } catch (error) {
+        throw error;
+      } finally {
+        loadingSelectRegencies.value = false;
+      }
     }
   }
 }
 
 const getDistricts = async () => {
-  loadingSelectDistricts.value = true;
-  if (selectLocationStore.$state.regency !== null) {
+  if (selectLocationStore.$state.regency?.id === 0) {
+    // loadingSelectDistricts.value = true;
     showSelectDistricts.value = true;
     try {
-      const responseDistricts = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selectLocationStore.$state.regency?.id}.json`)
+      const responseDistricts = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${filteredRegencies.value.id}.json`)
       districts.splice(0, districts.length, ...responseDistricts.data.map((district: DistrictInfo) => {
         return {
           id: district.id,
@@ -103,8 +126,46 @@ const getDistricts = async () => {
     } finally {
       loadingSelectDistricts.value = false;
     }
+  } else {
+    if (selectLocationStore.$state.regency !== null) {
+      // loadingSelectDistricts.value = true;
+      showSelectDistricts.value = true;
+      try {
+        const responseDistricts = await api.get(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selectLocationStore.$state.regency?.id}.json`)
+        districts.splice(0, districts.length, ...responseDistricts.data.map((district: DistrictInfo) => {
+          return {
+            id: district.id,
+            name: district.name,
+            value: district.id, // Set the desired value for the value property
+            label: district.name // Set the desired value for the label property
+          };
+        }));
+      }
+      catch (error) {
+        throw error;
+      } finally {
+        loadingSelectDistricts.value = false;
+      }
+    }
   }
 }
+
+watchEffect(async () => {
+  if (provinces.length !== 0) {
+    const dataProvinces = provinces.filter(province =>
+      province.name.toLowerCase() === selectLocationStore.$state.province?.name.toLowerCase()
+    );
+    filteredProvinces.value = dataProvinces[0];
+    await getRegencies();
+  }
+  if (regencies.length !== 0) {
+    const dataRegencies = regencies.filter(regency =>
+      regency.name.toLowerCase() === selectLocationStore.$state.regency?.name.toLowerCase()
+    );
+    filteredRegencies.value = dataRegencies[0];
+    await getDistricts();
+  }
+})
 
 const optionsProvinces = ref(provinces)
 const filterFnProvinces = (val: string, update: (callback: () => void) => void) => {

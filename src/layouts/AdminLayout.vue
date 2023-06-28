@@ -1,10 +1,18 @@
+<script setup lang="ts">
+import { useRoleStore } from 'stores/role';
+const roleStore = useRoleStore()
+</script>
+
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-white text-black">
       <q-toolbar>
 
         <q-toolbar-title class="text-black q-ml-md">
-          <router-link style="text-decoration: none; color: black;" :to="{ name: 'Admin' }">Admin </router-link>
+          <router-link v-if="roleStore.$state.role === 'company'" style="text-decoration: none; color: black;"
+            :to="{ name: 'Company' }">Company </router-link>
+          <router-link style="text-decoration: none; color: black;" v-if="roleStore.$state.role === 'admin'"
+            :to="{ name: 'Admin' }">Admin </router-link>
         </q-toolbar-title>
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
@@ -24,6 +32,3 @@
   </q-layout>
 </template>
 
-<script setup lang="ts">
-
-</script>

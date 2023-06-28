@@ -120,6 +120,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/categories/EditPage.vue'),
         name: 'EditCategory',
       },
+      {
+        path: 'contact',
+        component: () => import('pages/admin/contact/IndexPage.vue'),
+        name: 'AdminContact',
+      },
     ],
   },
   {
@@ -136,6 +141,12 @@ const routes: RouteRecordRaw[] = [
         path: 'create',
         component: () => import('pages/company/job/CreateJob.vue'),
         name: 'CreateJob',
+        meta: { requiresCompany: true },
+      },
+      {
+        path: 'history',
+        component: () => import('pages/company/job/HistoryPage.vue'),
+        name: 'HistoryJobCompany',
         meta: { requiresCompany: true },
       },
       {
@@ -162,6 +173,12 @@ const routes: RouteRecordRaw[] = [
         name: 'StudentApplicationList',
         meta: { requiresCompany: true },
       },
+      {
+        path: 'job/student-application-list/student/:id',
+        component: () => import('pages/company/job/StudentDetail.vue'),
+        name: 'StudentDetailApplication',
+        meta: { requiresCompany: true },
+      },
     ],
   },
 
@@ -184,17 +201,20 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/job/:id',
+    path: '/job',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
+        component: () => import('src/pages/jobs/IndexPage.vue'),
+        name: 'AllJob',
+      },
+      {
+        path: ':id',
         component: () => import('src/pages/jobs/JobDetailPage.vue'),
-        meta: { requiresAuth: true },
         name: 'JobDetail',
       },
     ],
-    meta: { transition: 'fade' },
   },
 
   {

@@ -34,7 +34,7 @@ export interface RegenciesInfo {
 }
 export interface DisctrictInfo {
   id: number;
-  name: string;
+  name: string | undefined;
   value: number;
   label: string;
 }
@@ -45,6 +45,7 @@ export interface UniversitiesInfo {
   location: string;
   regency: string;
   district: string;
+  province: string;
 }
 export interface CategoriesInfo {
   id: number;
@@ -103,6 +104,7 @@ export interface StudentsInfo {
 
 export interface ApplicationItem {
   student: StudentsInfo;
+  status: string;
   created_at: string; // Assuming created_at is a string representing a date
 }
 export interface StudentInfo {
@@ -135,6 +137,7 @@ export interface JobWithCompanyWithCategoriesInfo {
   title: string;
   description: string;
   location: string;
+  province: string;
   regency: string;
   district: string;
   schedule: string;

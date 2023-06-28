@@ -18,35 +18,39 @@ const loading = ref(false);
 const router = useRouter();
 const route = useRoute();
 const selectLocationStore = useSelectLocationStore();
-const university = ref<UniversitiesInfo>();
+let university = reactive<UniversitiesInfo>({
+  district: '',
+  id: 0,
+  location: '',
+  name: '',
+  province: '',
+  regency: ''
+});
 
 onBeforeMount(async () => {
   const response = await api.get(`universities/${route.params.id}`)
-  university.value = response.data.data;
-  form.name = university.value?.name;
-  form.location = university.value?.location;
-  selectLocationStore.$state.province = null
+  university = response.data.data;
+  form.name = university?.name;
+  form.location = university?.location;
 
-  if (selectLocationStore.$state.district === null) {
-    selectLocationStore.$state.district = {
-      id: 0,
-      name: '',
-      value: 0,
-      label: ''
-    };
-  } else {
-    selectLocationStore.$state.district.name = university.value?.district ?? '';
-  }
-  if (selectLocationStore.$state.regency === null) {
-    selectLocationStore.$state.regency = {
-      id: 0,
-      name: '',
-      value: 0,
-      label: ''
-    };
-  } else {
-    selectLocationStore.$state.regency.name = university.value?.regency ?? '';
-  }
+  selectLocationStore.$state.province = {
+    id: 0,
+    name: university.province,
+    value: 0,
+    label: university.province,
+  };
+  selectLocationStore.$state.district = {
+    id: 0,
+    name: university.district,
+    value: 0,
+    label: university.district,
+  };
+  selectLocationStore.$state.regency = {
+    id: 0,
+    name: university.regency,
+    value: 0,
+    label: university.regency,
+  };
 })
 
 const form = reactive<FormName>({
@@ -66,7 +70,7 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     loading.value = true;
     try {
-      await api.patch(`universities/${route.params.id}`, { name: form.name, location: form.location, regency: selectLocationStore.$state.regency?.name, district: selectLocationStore.$state.district?.name })
+      await api.patch(`universities/${route.params.id}`, { name: form.name, location: form.location, province: selectLocationStore.$state.province?.name, regency: selectLocationStore.$state.regency?.name, district: selectLocationStore.$state.district?.name })
       router.push({ name: 'Universities' })
     } catch (error) {
       throw error

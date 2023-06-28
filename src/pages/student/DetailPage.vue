@@ -28,8 +28,9 @@ if (!studentStore.$state.studentId) {
   onMounted(async () => {
     try {
       bar.value.start();
-      const response = await api.get(`students/getOneStudentByUserId/${studentStore.$state.studentId}`);
-      studentId.value = response.data.data.id;
+      const response = await api.get(`students/getOneStudentByStudentId/${studentStore.$state.studentId}`);
+      studentId.value = response.data.student.id;
+      student.value = response.data.student;
     } catch (error) {
       throw error
     } finally {

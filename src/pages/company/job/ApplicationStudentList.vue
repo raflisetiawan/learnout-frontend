@@ -16,6 +16,7 @@ onMounted(async () => {
     students.value = response.data.map((item: ApplicationItem) => {
       return {
         student: item.student,
+        status: item.status,
         created_at: item.created_at
       };
     });
@@ -23,7 +24,6 @@ onMounted(async () => {
     if (isAxiosError(error) && error.response && error.response.status === 404) {
       isStudentEmpty.value = true;
     } else {
-      // Handle other types of errors
       throw error;
     }
   }
@@ -42,6 +42,7 @@ function isAxiosError(error: unknown): error is AxiosError {
             <tr>
               <th class="text-left">Mahasiswa</th>
               <th class="text-left">Tanggal Mendaftar</th>
+              <th class="text-left">Status</th>
               <th class="text-right">Action</th>
             </tr>
           </thead>
@@ -50,8 +51,10 @@ function isAxiosError(error: unknown): error is AxiosError {
               <tr>
                 <td class="text-left">{{ student.student.name }}</td>
                 <td class="text-left">{{ formatDate(new Date(student.created_at)) }}</td>
+                <td class="text-left">{{ student.status }}</td>
                 <td class="text-right">
-                  <q-btn icon="info" color="blue">
+                  <q-btn icon="info" color="blue"
+                    :to="{ name: 'StudentDetailApplication', params: { id: student.student.id } }">
                     <q-tooltip>
                       Lihat Detail Mahasiswa
                     </q-tooltip>

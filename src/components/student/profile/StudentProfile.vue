@@ -54,7 +54,7 @@ const redirectToStudentDetailPage = (studentId: string) => {
         Tambahkan Daftar Riwayat Hidup
       </q-btn>
       <q-btn flat color="info" @click="redirectToStudentDetailPage(studentData.id)">
-        Tambahkan Daftar Riwayat Hidup
+        Detail
       </q-btn>
     </q-card-actions>
   </q-card>
