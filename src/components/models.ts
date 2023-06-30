@@ -106,6 +106,7 @@ export interface ApplicationItem {
   student: StudentsInfo;
   status: string;
   created_at: string; // Assuming created_at is a string representing a date
+  id: number;
 }
 export interface StudentInfo {
   id: number;
@@ -118,6 +119,7 @@ export interface StudentInfo {
   university_id: number;
   created_at: Date;
   updated_at: Date;
+  categories: CategoriesInfo[];
 }
 
 export interface JobsInfo {
@@ -193,4 +195,10 @@ export interface ApplicationWithJobListingAndCompanyInfo {
 export interface SubmitError {
   isError: boolean;
   message: string;
+}
+
+export interface StudentUniversityUser {
+  user: UserInfo;
+  student: StudentInfo;
+  university: UniversitiesInfo;
 }

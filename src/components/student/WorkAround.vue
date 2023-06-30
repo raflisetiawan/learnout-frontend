@@ -41,7 +41,12 @@ const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
               <q-card-section>
                 <div class="text-h5 q-mt-sm q-mb-xs">{{ job.title }}</div>
                 <div class="text-overline">{{ job.company.name }}</div>
-                <p>{{ job.location }} - {{ job.district }} - {{ job.regency }}</p>
+                <div>{{ job.location }} - {{ job.district }} - {{ job.regency }}</div>
+                <template v-for="category in job.categories" :key="category.id">
+                  <q-badge color="primary" class="q-mr-sm">
+                    {{ category.name }}
+                  </q-badge>
+                </template>
                 <div class="text-caption text-grey">
                   {{ formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: id }) }}
                 </div>

@@ -75,6 +75,12 @@ const sureCancel = async () => {
   }
 }
 
+const changeStatusBadgeColor = (status: string) => {
+  if (status === 'accept') return 'green';
+  if (status === 'pending') return 'warning';
+  if (status === 'reject') return 'red';
+}
+
 </script>
 <template>
   <div>
@@ -82,13 +88,14 @@ const sureCancel = async () => {
     <div class="row q-pa-md justify-center">
       <div class="col-md-8 col-sm-10 col-xs-12">
         <q-markup-table>
-          <thead>
+          <thead class="bg-primary text-white">
             <tr>
               <th class="text-left">Judul Pekerjaan</th>
               <th class="text-right">Asal Perusahaan</th>
               <th class="text-right">Status</th>
               <th class="text-right">Surat Lamaran</th>
               <th class="text-right">CV</th>
+              <th class="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -96,7 +103,8 @@ const sureCancel = async () => {
               <tr>
                 <td class="text-left">{{ application.joblisting.title }}</td>
                 <td class="text-right">{{ application.joblisting.company.name }}</td>
-                <td class="text-right"><q-badge color="warning">{{ application.status }}</q-badge></td>
+                <td class="text-right"><q-badge :color="changeStatusBadgeColor(application.status)">{{ application.status
+                }}</q-badge></td>
                 <td class="text-right">
                   <a v-if="typeof application.cover_letter === 'string'" target="_blank" :href="application.cover_letter"
                     class="text-black">

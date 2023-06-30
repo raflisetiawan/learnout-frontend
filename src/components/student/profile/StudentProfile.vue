@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import { useStudentStore } from 'stores/student';
 
-defineProps(['universityData', 'studentData']);
+defineProps(['universityData', 'studentData'])
 const router = useRouter();
 const studentStore = useStudentStore();
 
@@ -27,19 +27,26 @@ const redirectToStudentDetailPage = (studentId: string) => {
 </script>
 <template>
   <div class="text-h5 q-mb-md">Informasi Mahasiswa</div>
-  <q-card class="my-card" flat bordered>
-    <q-card-section horizontal>
+  <q-card class="my-card" bordered>
+    <q-card-section class=" bg-primary text-white">
       <q-card-section class="q-pt-xs">
-        <div class="text-overline">{{ studentData.name }}</div>
-        <p>{{ universityData.name }}</p>
-        <p>{{ studentData.phone }}</p>
-        <div class="text-caption text-grey">
-          <div>Alamat</div>
-          {{ studentData.address }}
-        </div>
+        <div class="text-h6">{{ studentData.name }}</div>
+        <div class="text-subtitle2">{{ universityData.name }}</div>
+        <div class=""></div>
       </q-card-section>
-
     </q-card-section>
+    <q-card-section class="q-pt-xs">
+      <div class="text-overline">{{ studentData.phone }}</div>
+      <div class="text-caption text-grey">
+        <div>Alamat: {{ studentData.address }}</div>
+      </div>
+      <div class="q-ml-sm" v-for="category in studentData.categories" :key="category.id">
+        <q-badge color="primary" class="q-mr-md q-mt-md">
+          {{ category.name }}
+        </q-badge>
+      </div>
+    </q-card-section>
+
 
     <q-separator />
 

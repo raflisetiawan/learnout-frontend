@@ -14,8 +14,10 @@ import FooterSection from 'components/FooterSection.vue';
 
     <q-page-container>
       <HeroSection />
-      <FeatureSection />
-      <ProcessSection />
+      <q-intersection transition="scale">
+        <FeatureSection />
+        <ProcessSection />
+      </q-intersection>
       <SocialProofSection />
       <FooterSection />
     </q-page-container>

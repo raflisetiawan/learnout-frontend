@@ -4,6 +4,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, email, helpers } from '@vuelidate/validators';
 import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
+import FooterSection from 'src/components/FooterSection.vue';
 
 const formData = ref({
   name: '',
@@ -110,4 +111,6 @@ const onSubmit = async () => {
       </div>
     </div>
   </div>
+  <q-separator></q-separator>
+  <footer-section />
 </template>

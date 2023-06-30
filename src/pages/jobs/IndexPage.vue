@@ -34,6 +34,7 @@ onMounted(async () => {
       bar.value.start();
       const response = await api.get('jobs', { params });
       jobs.value = response.data.data.data;
+      console.log(jobs.value);
     } catch (error) {
       throw error;
     } finally {
@@ -55,6 +56,7 @@ onMounted(async () => {
       }
     }
   }
+
 })
 
 const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
@@ -67,7 +69,9 @@ const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
   <section class="all-job-section">
     <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
     <div class="q-pa-md">
-      <div class="text-h4 section-title">Semua Pekerjaan</div>
+      <div class="text-h4 section-title" v-if="filterSearch.$state.isFilter">Hasil Filter</div>
+      <div class="text-h4 section-title" v-else-if="isSearched">Hasil pencarian Pekerjaan</div>
+      <div class="text-h4 section-title" v-else>Semua Pekerjaan</div>
 
       <div :class="quasar.screen.lt.md ? `row justify-center` : `row`">
         <template v-for="job in jobs" :key="job.id">
@@ -77,7 +81,12 @@ const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
               <q-card-section>
                 <div class="text-h5 q-mt-sm q-mb-xs">{{ job.title }}</div>
                 <div class="text-overline">{{ job.company.name }}</div>
-                <p>{{ job.location }} - {{ job.district }} - {{ job.regency }}</p>
+                <div>{{ job.location }} - {{ job.district }} - {{ job.regency }}</div>
+                <template v-for="category in job.categories" :key="category.id">
+                  <q-badge color="primary" class="q-mr-sm">
+                    {{ category.name }}
+                  </q-badge>
+                </template>
                 <div class="text-caption text-grey">
                   {{ formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: id }) }}
                 </div>

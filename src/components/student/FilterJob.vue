@@ -46,6 +46,9 @@ const getCategories = async () => {
 await getCategories();
 
 const showDialog = () => {
+  filterSearch.$state.isFilter = false;
+  filterSearch.$state.categories = [];
+  filterSearch.$state.regency = undefined;
   filterDialog.value = true;
 }
 

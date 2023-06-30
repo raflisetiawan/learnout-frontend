@@ -9,9 +9,9 @@
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
           <q-btn flat dense>Home</q-btn>
-          <q-btn flat dense>Lowongan</q-btn>
+          <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
           <q-btn flat dense>Kategori</q-btn>
-          <q-btn flat dense>Tentang Kami</q-btn>
+          <q-btn flat dense :to="{ name: 'AboutUs' }">Tentang Kami</q-btn>
           <q-btn flat dense>Kontak</q-btn>
           <!-- <q-btn color="primary" :to="{ name: 'SignUp' }">Daftar</q-btn> -->
         </div>

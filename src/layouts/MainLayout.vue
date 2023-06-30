@@ -49,14 +49,14 @@ const handleImageError = () => {
         <q-btn v-if="$q.screen.lt.md" flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="menu" />
 
         <q-toolbar-title class="text-black q-ml-md">
-          <router-link style="text-decoration: none; color: black;" to="/">Learnout</router-link>
+          <router-link style="text-decoration: none; color: rgb(80, 54, 54);" to="/">Learnout</router-link>
         </q-toolbar-title>
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
           <q-btn flat dense>Home</q-btn>
           <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
           <q-btn flat dense>Kategori</q-btn>
-          <q-btn flat dense>Tentang Kami</q-btn>
+          <q-btn flat dense :to="{ name: 'AboutUs' }">Tentang Kami</q-btn>
           <q-btn flat dense to="/contact">Kontak</q-btn>
           <q-btn-dropdown flat dense rounded>
             <template v-slot:label>
@@ -189,9 +189,9 @@ const handleImageError = () => {
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
           <q-btn flat dense>Home</q-btn>
-          <q-btn flat dense>Lowongan</q-btn>
+          <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
           <q-btn flat dense>Kategori</q-btn>
-          <q-btn flat dense>Tentang Kami</q-btn>
+          <q-btn flat dense :to="{ name: 'AboutUs' }">Tentang Kami</q-btn>
           <q-btn flat dense :to="{ name: 'ContactPage' }">Kontak</q-btn>
           <q-btn :to="{ name: 'SignUp' }" color="primary">Daftar</q-btn>
         </div>

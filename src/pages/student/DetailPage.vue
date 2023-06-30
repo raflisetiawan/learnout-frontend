@@ -48,6 +48,9 @@ if (!studentStore.$state.studentId) {
         <div class="col-md-4 col-sm-6 col-xs-10">
           <div class="text-h4">{{ student?.name }}</div>
         </div>
+        <div class="col-md-4">
+          <a :href="student?.curriculum_vitae"><q-btn color="primary" target="_blank">CV</q-btn></a>
+        </div>
       </div>
       <div class="text-overline">{{ student?.address }}</div>
       <div class="text-caption text-grey q-mb-md">Di posting sejak:

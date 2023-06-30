@@ -50,7 +50,8 @@ const studentData = ref<StudentInfo>({
   phone: '',
   regency: '',
   university_id: 0,
-  updated_at: new Date()
+  updated_at: new Date(),
+  categories: []
 })
 
 const universityData = ref<UniversitiesInfo>({
@@ -143,7 +144,7 @@ const handleImageError = () => {
               </div>
             </q-card-section>
 
-            <q-card-section class="col-5 flex flex-center">
+            <q-card-section horizontal class="col-5 flex flex-center">
               <q-avatar size="100px" v-if="userData.image !== null">
                 <q-img :src="userData.image" @error="handleImageError" />
               </q-avatar>

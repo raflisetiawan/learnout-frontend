@@ -181,25 +181,6 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
-  {
-    path: '/my-profile',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('src/pages/my_profile/ProfilePage.vue'),
-        meta: { requiresAuth: true },
-        name: 'MyProfile',
-      },
-      {
-        path: 'student/:id',
-        component: () => import('src/pages/student/DetailPage.vue'),
-        meta: { requiresAuth: true },
-        name: 'StudentDetailProfile',
-      },
-    ],
-  },
   {
     path: '/job',
     component: () => import('layouts/MainLayout.vue'),
@@ -235,45 +216,78 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
   {
-    path: '/student/application',
-    component: () => import('layouts/MainLayout.vue'),
+    path: '/student',
+    component: () => import('src/layouts/StudentLayout.vue'),
+    meta: { requiresAuth: true },
+    redirect: { name: 'StudentDashboard' },
     children: [
       {
-        path: '',
-        component: () => import('src/pages/student/history/IndexPage.vue'),
-        meta: { requiresAuth: true },
-        name: 'HistoryApplication',
+        path: 'dashboard',
+        component: () => import('src/pages/student/DashboardPage.vue'),
+        name: 'StudentDashboard',
       },
       {
-        path: ':id',
-        component: () => import('src/pages/applications/EditPage.vue'),
-        meta: { requiresAuth: true },
-        name: 'EditHistoryApplication',
+        path: 'my-profile',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/my_profile/ProfilePage.vue'),
+            name: 'MyProfile',
+          },
+          {
+            path: 'student/:id',
+            component: () => import('src/pages/student/DetailPage.vue'),
+            name: 'StudentDetailProfile',
+          },
+        ],
+      },
+      {
+        path: 'application',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/student/history/IndexPage.vue'),
+            name: 'HistoryApplication',
+          },
+          {
+            path: ':id',
+            component: () => import('src/pages/applications/EditPage.vue'),
+            name: 'EditHistoryApplication',
+          },
+        ],
+      },
+      {
+        path: 'edit',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/student/EditPage.vue'),
+            name: 'EditStudent',
+          },
+        ],
+      },
+      {
+        path: 'resume/create',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/student/resume/CreatePage.vue'),
+            name: 'CreateResumeStudent',
+          },
+        ],
       },
     ],
   },
   {
-    path: '/student/edit',
+    path: '/about',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
-        component: () => import('src/pages/student/EditPage.vue'),
-        meta: { requiresAuth: true },
-        name: 'EditStudent',
-      },
-    ],
-  },
-  {
-    path: '/student/resume/create',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('src/pages/student/resume/CreatePage.vue'),
-        meta: { requiresAuth: true },
-        name: 'CreateResumeStudent',
+        name: 'AboutUs',
+        component: () => import('src/pages/AboutUsPage.vue'),
       },
     ],
   },
