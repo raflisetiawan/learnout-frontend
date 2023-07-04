@@ -3,13 +3,11 @@ import { api } from 'src/boot/axios';
 import { useStudentStore } from 'src/stores/student';
 import { ref, watchEffect } from 'vue';
 import * as echarts from 'echarts'; // Import ECharts library
-import { useRootUrlStore } from 'src/stores/rootUrl';
 
 const studentStore = useStudentStore();
 const studentCountApply = ref(0);
 const studentRejectCount = ref(0);
 const studentPendingCount = ref(0);
-const rootUrl = useRootUrlStore();
 
 const getData = async () => {
   try {

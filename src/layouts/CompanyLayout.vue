@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { api } from 'src/boot/axios';
+import { api, storageBaseUrl } from 'src/boot/axios';
 import { useRouter } from 'vue-router';
-import { useStudentStore } from 'stores/student';
-import { useRoleStore } from 'stores/role';
 import { onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useUserStore } from 'src/stores/user';
 import { CompanyInfo } from 'src/components/models';
+import { useCompanyStore } from 'src/stores/company';
 
 const router = useRouter();
 const userStore = useUserStore();
-const roleStore = useRoleStore();
 const $q = useQuasar();
-const studentStore = useStudentStore();
+const companyStore = useCompanyStore();
 
 const companyData = ref<CompanyInfo>({
   id: 0,
@@ -32,16 +30,10 @@ const companyData = ref<CompanyInfo>({
 
 const getData = async () => {
   try {
-    const response = await api.get(`/users/getUserAndStudentByUserId/${userStore.$state.userId}`);
-    studentStore.$state.data.student = response.data.student;
-    studentStore.$state.data.user = response.data.user;
-    try {
-      const response = await api.get(`universities/${studentStore.$state.data.student.university_id}`);
-      studentStore.$state.data.university = response.data.data;
-      // console.log(response)
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`/users/getUserAndCompanyByUserId/${userStore.$state.userId}`);
+    companyStore.$state.data.user = response.data.user;
+    companyStore.$state.data.company = response.data.company;
+    companyData.value = { ...companyData.value, ...response.data.data };
   } catch (error) {
     throw error
   }
@@ -69,7 +61,9 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-
+const handleErrorImage = () => {
+  companyStore.$state.data.user.image = `${storageBaseUrl}/users/images/user.png`;
+}
 
 </script>
 <template>
@@ -93,7 +87,7 @@ const toggleLeftDrawer = () => {
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar>
-                  <img :src="studentStore.$state.data?.user?.image ?? ''">
+                  <img :src="companyStore.$state.data?.user?.image ?? ''" @error="handleErrorImage()">
                 </q-avatar>
               </div>
             </template>
@@ -117,7 +111,7 @@ const toggleLeftDrawer = () => {
       <q-drawer v-model="leftDrawerOpen" side="left" bordered>
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding>
-            <q-item clickable :to="{ name: 'StudentDashboard' }">
+            <q-item clickable :to="{ name: 'Company' }">
               <q-item-section avatar>
                 <q-icon name="dashboard" />
               </q-item-section>
@@ -125,7 +119,7 @@ const toggleLeftDrawer = () => {
                 <q-item-label>Dashboard</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable :to="{ name: 'MyProfile' }">
+            <q-item clickable :to="{ name: 'MyProfileCompany' }">
               <q-item-section avatar>
                 <q-icon name="fa-solid fa-user" />
               </q-item-section>
@@ -133,20 +127,20 @@ const toggleLeftDrawer = () => {
                 <q-item-label>Profil Saya</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable :to="{ name: 'HistoryApplication' }">
+            <q-item clickable :to="{ name: 'ListJob' }">
               <q-item-section avatar>
-                <q-icon name="list" />
+                <q-icon name="list_alt" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Riwayat Lamaran</q-item-label>
+                <q-item-label>List Pekerjaan</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable :to="{ name: 'Home' }">
+            <q-item clickable :to="{ name: 'HistoryJobCompany' }">
               <q-item-section avatar>
-                <q-icon name="fa-solid fa-house" />
+                <q-icon name="work_history" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Home</q-item-label>
+                <q-item-label>History Semua Pekerjaan</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable :to="{ name: 'AllJob' }">
@@ -196,10 +190,11 @@ const toggleLeftDrawer = () => {
           style="height: 150px ;background: radial-gradient(circle at 7.5% 24%, rgb(237, 161, 193) 0%, rgb(250, 178, 172) 25.5%, rgb(190, 228, 210) 62.3%, rgb(215, 248, 247) 93.8%);">
           <div class="absolute-bottom bg-transparent q-ml-md q-mb-md">
             <q-avatar size="56px" class="q-mb-sm">
-              <img class="rounded-borders" :src="studentStore.$state.data?.user?.image ?? ''" />
+              <img class="rounded-borders" :src="companyStore.$state.data?.user?.image ?? ''"
+                @error="handleErrorImage()" />
             </q-avatar>
-            <div class="text-weight-bold">{{ studentStore.$state.data?.user?.name }}</div>
-            <div>{{ studentStore.$state.data?.user?.email }}</div>
+            <div class="text-weight-bold">{{ companyStore.$state.data?.user?.name }}</div>
+            <div>{{ companyStore.$state.data?.user?.email }}</div>
           </div>
         </div>
       </q-drawer>

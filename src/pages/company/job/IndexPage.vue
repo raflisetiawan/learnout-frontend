@@ -88,7 +88,6 @@ const onClose = async (id: number, title: string) => {
 
 <template>
   <div class="q-pa-md">
-    <q-btn color="primary" :to="{ name: 'HistoryJobCompany' }">History Pekerjaan</q-btn>
     <div class="row justify-center">
       <template v-for="job in jobs" :key="job.id">
         <div class="col-md-4 col-sm-10 col-xs-12">
@@ -133,6 +132,11 @@ const onClose = async (id: number, title: string) => {
         </div>
       </template>
     </div>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="add" color="primary" :to="{ name: 'CreateJob' }">
+        <q-tooltip>Posting pekerjaan</q-tooltip>
+      </q-btn>
+    </q-page-sticky>
     <q-dialog v-model="showDeleteDialog" persistent>
       <q-card>
         <q-card-section class="row items-center">

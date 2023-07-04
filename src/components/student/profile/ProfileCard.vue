@@ -86,6 +86,13 @@ const getData = async () => {
     } catch (error) {
       throw error
     }
+  } else {
+    try {
+      const response = await api.get(`/users/${userStore.$state.userId}`);
+      userData.value = { ...userData.value, ...response.data.data }
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

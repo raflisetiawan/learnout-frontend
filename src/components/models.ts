@@ -202,3 +202,8 @@ export interface StudentUniversityUser {
   student: StudentInfo;
   university: UniversitiesInfo;
 }
+
+export interface Report {
+  count: number[];
+  month: string[];
+}

@@ -1,3 +1,4 @@
+import { useRoleStore } from 'src/stores/role';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -74,9 +75,20 @@ const routes: RouteRecordRaw[] = [
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
     meta: { requiresdAdmin: true },
+    redirect: { name: 'Admin' },
     children: [
       {
-        path: '',
+        path: 'my-profile',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/my_profile/ProfilePage.vue'),
+            name: 'MyProfileAdmin',
+          },
+        ],
+      },
+      {
+        path: 'dashboard',
         component: () => import('pages/admin/IndexPage.vue'),
         name: 'Admin',
       },
@@ -125,14 +137,25 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/contact/IndexPage.vue'),
         name: 'AdminContact',
       },
+      {
+        path: 'reports/job',
+        component: () => import('pages/admin/reports/JobReport.vue'),
+        name: 'JobReport',
+      },
+      {
+        path: 'reports/application',
+        component: () => import('pages/admin/reports/ApplicationReport.vue'),
+        name: 'ApplicationReport',
+      },
     ],
   },
   {
     path: '/company',
-    component: () => import('layouts/AdminLayout.vue'),
+    component: () => import('layouts/CompanyLayout.vue'),
+    redirect: { name: 'Company' },
     children: [
       {
-        path: '',
+        path: 'dashboard',
         component: () => import('pages/company/IndexPage.vue'),
         name: 'Company',
         meta: { requiresCompany: true },
@@ -179,6 +202,21 @@ const routes: RouteRecordRaw[] = [
         name: 'StudentDetailApplication',
         meta: { requiresCompany: true },
       },
+      {
+        path: 'my-profile',
+        children: [
+          {
+            path: '',
+            component: () => import('src/pages/my_profile/ProfilePage.vue'),
+            name: 'MyProfileCompany',
+          },
+          // {
+          //   path: 'student/:id',
+          //   component: () => import('src/pages/student/DetailPage.vue'),
+          //   name: 'StudentDetailProfile',
+          // },
+        ],
+      },
     ],
   },
   {
@@ -221,6 +259,12 @@ const routes: RouteRecordRaw[] = [
     path: '/student',
     component: () => import('src/layouts/StudentLayout.vue'),
     meta: { requiresAuth: true },
+    beforeEnter: (to, from, next) => {
+      const roleStore = useRoleStore();
+      if (roleStore.$state.role === 'company')
+        return next({ name: 'Unauthorized' });
+      else return next();
+    },
     redirect: { name: 'StudentDashboard' },
     children: [
       {

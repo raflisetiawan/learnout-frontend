@@ -54,7 +54,7 @@ const onSubmit = async () => {
       <div class="col-md-8">
         <div class="text-h6 q-mb-lg text-center">Edit Category</div>
         <q-form @submit="onSubmit" class="q-gutter-md">
-          <q-input filled v-model="form.name" label="Nama Universitas *" type="text" :error="v$.name.$error"
+          <q-input filled v-model="form.name" label="Nama Category *" type="text" :error="v$.name.$error"
             @input="v$.name.$touch" @blur="v$.name.$touch" :error-message="v$.name.$errors.map((e) => e.$message).join()">
           </q-input>
 
