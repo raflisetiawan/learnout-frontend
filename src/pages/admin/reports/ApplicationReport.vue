@@ -55,6 +55,7 @@ onMounted(async () => {
 })
 </script>
 <template>
+  <q-btn color="primary" class="q-ma-md" :to="{ name: 'ApplicationReportDetail' }">Detail Laporannya</q-btn>
   <div class="row q-pa-md">
     <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
     <template v-for="application in applicationsCountPerMonth" :key="application.month">

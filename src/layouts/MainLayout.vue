@@ -182,6 +182,7 @@ const handleImageError = () => {
     </q-header>
     <q-header class="bg-white text-black" v-else bordered>
       <q-toolbar>
+        <q-btn v-if="$q.screen.lt.md" flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="menu" />
 
         <q-toolbar-title class="text-black q-ml-md">
           <router-link style="text-decoration: none; color: black;" to="/">Learnout</router-link>
@@ -196,6 +197,53 @@ const handleImageError = () => {
           <q-btn :to="{ name: 'SignUp' }" color="primary">Daftar</q-btn>
         </div>
       </q-toolbar>
+
+      <q-drawer v-model="leftDrawerOpen" side="left" bordered>
+        <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
+          <q-list padding>
+            <q-item clickable :to="{ name: 'Home' }">
+              <q-item-section avatar>
+                <q-icon name="home" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Beranda</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'AllJob' }">
+              <q-item-section avatar>
+                <q-icon name="fa-solid fa-list" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Lowongan</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'AboutUs' }">
+              <q-item-section avatar>
+                <q-icon name="info" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Tentang Kami</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'ContactPage' }">
+              <q-item-section avatar>
+                <q-icon name="contacts" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Kontak Kami</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'SignIn' }">
+              <q-item-section avatar>
+                <q-icon name="login" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Login</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-scroll-area>
+      </q-drawer>
     </q-header>
 
     <q-page-container>

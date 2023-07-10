@@ -3,11 +3,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { JobWithCompanyWithCategoriesInfo } from 'components/models';
 import { useJobStore } from 'src/stores/job';
 import { useFilterSearchStore } from 'src/stores/filterSearch';
+import SearchJob from '../SearchJob.vue';
+import FilterJob from 'src/components/student/FilterJob.vue';
 
 const jobStore = useJobStore();
 const bar = ref();
@@ -18,8 +20,7 @@ const quasar = useQuasar();
 const isSearched = route.query.keyword !== undefined;
 const filterSearch = useFilterSearchStore();
 
-onMounted(async () => {
-
+const mountData = async () => {
   const params = {};
   if (filterSearch.$state.isFilter) {
     if (filterSearch.$state.categories.length > 0) {
@@ -27,18 +28,24 @@ onMounted(async () => {
     }
 
     if (filterSearch.$state.regency !== '') {
-      // filterSearch.$state.regency = locationStore.$state.regency?.name;
       params['regency'] = filterSearch.$state.regency;
     }
+
+    if (filterSearch.$state.isTimeFilter) {
+      const startTime = filterSearch.$state.timeFilter.startTime;
+      const endTime = filterSearch.$state.timeFilter.endTime;
+      params['start_time'] = startTime;
+      params['end_time'] = endTime;
+    }
+
     try {
       bar.value.start();
       const response = await api.get('jobs', { params });
       jobs.value = response.data.data.data;
-      console.log(jobs.value);
     } catch (error) {
       throw error;
     } finally {
-      bar.value.stop()
+      bar.value.stop();
     }
   } else {
     if (isSearched) {
@@ -56,7 +63,23 @@ onMounted(async () => {
       }
     }
   }
+}
 
+
+onMounted(async () => {
+  await mountData()
+})
+
+
+watchEffect(async () => {
+  if (route.query.keyword) {
+    await mountData();
+  }
+
+  if (filterSearch.$state.isFilter) {
+    await mountData();
+    filterSearch.$state.isFilter = false;
+  }
 })
 
 const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
@@ -67,6 +90,19 @@ const redirectToJobDetail = (job: JobWithCompanyWithCategoriesInfo) => {
 
 <template>
   <section class="all-job-section">
+    <div class="row justify-center">
+      <div class="col-md-6">
+        <search-job />
+      </div>
+      <div class="col-md-1">
+        <Suspense>
+          <filter-job />
+          <template #fallback>
+            filter
+          </template>
+        </Suspense>
+      </div>
+    </div>
     <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
     <div class="q-pa-md">
       <div class="text-h4 section-title" v-if="filterSearch.$state.isFilter">Hasil Filter</div>

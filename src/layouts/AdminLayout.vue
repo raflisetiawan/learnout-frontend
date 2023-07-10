@@ -130,7 +130,7 @@ const handleErrorImage = () => {
               <q-item-label>Laporan Lamaran</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item clickable target="_blank" rel="noopener" href="https://forum.quasar.dev">
+          <q-item clickable :to="{ name: 'AboutUs' }">
             <q-item-section avatar>
               <q-icon name="info" />
             </q-item-section>
@@ -138,7 +138,7 @@ const handleErrorImage = () => {
               <q-item-label>Tentang Kami</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item clickable target="_blank" rel="noopener" href="https://twitter.quasar.dev">
+          <q-item clickable :to="{ name: 'ContactPage' }">
             <q-item-section avatar>
               <q-icon name="contacts" />
             </q-item-section>

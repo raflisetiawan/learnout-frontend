@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const text = ref();
+const router = useRouter();
+
+const onSubmit = async () => {
+  router.push({ path: '/job', query: { keyword: text.value } });
+}
+
 </script>
 
 <template>
@@ -13,14 +20,16 @@ const text = ref();
           kerja yang berharga. Web app kami menyediakan fitur pencarian yang cerdas dan filter yang membantu Anda
           menemukan pekerjaan yang cocok dengan latar belakang pendidikan dan minat Anda dan filter sesuai tempat kampus
           terdekat anda.</p>
-        <div class="row flex-center">
-          <div class="col-md-6 col-sm-8">
-            <q-input outlined v-model="text" dense class="q-mr-md" label="Cari kerja" />
+        <q-form @submit="onSubmit()">
+          <div class="row flex-center">
+            <div class="col-md-6 col-sm-8">
+              <q-input outlined v-model="text" dense class="q-mr-md" label="Cari kerja" />
+            </div>
+            <div class="col-md-6 col-sm-4">
+              <q-btn type="submit" label="Cari" color="primary" />
+            </div>
           </div>
-          <div class="col-md-6 col-sm-4">
-            <q-btn label="Cari" color="primary" />
-          </div>
-        </div>
+        </q-form>
       </div>
       <div class="hero-image">
         <q-img src="../../assets/img/hero.png" alt="Gambar Hero" />
@@ -34,7 +43,6 @@ const text = ref();
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  height: 100vh;
 }
 
 .hero-content {

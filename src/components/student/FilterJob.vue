@@ -12,6 +12,7 @@ interface CategoryInfo {
   value: number,
   label: string
 }
+
 const filterDialog = ref(false);
 const categories = reactive<CategoryInfo[]>([]);
 const loadingSelectCategory = ref(false);
@@ -21,6 +22,7 @@ const optionsCategory = ref(categories);
 const locationStore = useSelectLocationStore();
 const filterSearch = useFilterSearchStore();
 const router = useRouter();
+
 
 const getCategories = async () => {
   try {
@@ -126,10 +128,45 @@ const onFilter = async () => {
             <div class="col-10">
               <location-select />
             </div>
+            <div class="col-10">
+              <q-input filled label="Jam mulai kerja" v-model="filterSearch.$state.timeFilter.startTime" mask="time"
+                :rules="['time']">
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-time v-model="filterSearch.$state.timeFilter.startTime" format24h>
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+            <div class="col-10">
+              <q-input filled label="Jam akhir kerja" v-model="filterSearch.$state.timeFilter.endTime" mask="time"
+                :rules="['time']">
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-time v-model="filterSearch.$state.timeFilter.endTime" format24h>
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
           </div>
-          <div class="row text-center q-mt-md">
-            <div class="col-12">
+          <div class="row text-center justify-content-center q-mt-md">
+            <div class="col-8">
               <q-btn color="primary" @click="onFilter">Filter</q-btn>
+            </div>
+            <div class="col-4">
+              <q-checkbox v-model="filterSearch.$state.isTimeFilter" label="Filter jam kerja?" />
             </div>
           </div>
         </q-card-section>

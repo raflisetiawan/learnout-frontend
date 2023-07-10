@@ -38,7 +38,7 @@ function isAxiosError(error: unknown): error is AxiosError {
 <template>
   <div class="q-pa-md">
     <div class="row justify-center">
-      <div class="col-md-10">
+      <div class="col-md-10 col-xs-12 col-sm-12">
         <q-markup-table>
           <thead>
             <tr>

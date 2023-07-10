@@ -51,15 +51,16 @@ onMounted(async () => {
 <template>
   <div class="row q-pa-md">
     <q-ajax-bar ref="bar" color="primary" position="top" size="5px" skip-hijack />
-    <template v-for="job in jobsPerMonth" :key="job.month">
-      <div class="col-md-8 col-sm-10 col-xs-12 q-mb-md">
+    <div class="col-md-8 col-sm-10 col-xs-12 q-mb-md">
+      <q-btn color="primary" :to="{ name: 'JobReportDetail' }">Detail Laporannya</q-btn>
+      <template v-for="job in jobsPerMonth" :key="job.month">
         <Bar v-if="loadedJobsPerMonth"
           :data="{ labels: job.month, datasets: [{ data: job.count, label: `Jumlah semua Pekerjaan yang di post per bulan`, backgroundColor: 'rgb(227,93,106)' }] }"
           :options="chartOptions">
         </Bar>
-      </div>
-    </template>
-    <template v-for="job in openJobListingsCountPerMonth" :key="job.month">
+      </template>
+    </div>
+    <template v-for=" job  in  openJobListingsCountPerMonth " :key="job.month">
       <div class="col-md-8 col-sm-10 col-xs-12 q-mb-md">
         <Bar v-if="loadedJobListingsCountPerMonth"
           :data="{ labels: job.month, datasets: [{ data: job.count, label: `Jumlah Pekerjaan yang di buka per bulan`, backgroundColor: 'teal' }] }"
@@ -67,7 +68,7 @@ onMounted(async () => {
         </Bar>
       </div>
     </template>
-    <template v-for="job in closeJobListingsCountPerMonth" :key="job.month">
+    <template v-for=" job  in  closeJobListingsCountPerMonth " :key="job.month">
       <div class="col-md-8 col-sm-10 col-xs-12 q-mb-md">
         <Bar v-if="loadedCloseJobListingsCountPerMonth"
           :data="{ labels: job.month, datasets: [{ data: job.count, label: `Jumlah Pekerjaan yang di tutup per bulan`, backgroundColor: 'grey' }] }"

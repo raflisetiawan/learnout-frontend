@@ -207,3 +207,8 @@ export interface Report {
   count: number[];
   month: string[];
 }
+
+export interface TimeFilter {
+  startTime: string;
+  endTime: string;
+}

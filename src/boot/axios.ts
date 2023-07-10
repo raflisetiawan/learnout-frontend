@@ -13,10 +13,10 @@ declare module '@vue/runtime-core' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-// const api = axios.create({ baseURL: 'http://172.20.10.3:8000/api/' });
 const api = axios.create({ baseURL: 'http://127.0.0.1:8000/api/' });
+// const api = axios.create({ baseURL: 'http://192.168.69.253:8000/api/' });
+// const storageBaseUrl = 'http://192.168.69.25l3:8000/storage';
 const storageBaseUrl = 'http://127.0.0.1:8000/storage';
-// const storageBaseUrl = 'http://172.20.10.3:8000/storage';
 // http://127.0.0.1:8000/api/
 // 10.214.126.23
 

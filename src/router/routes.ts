@@ -143,9 +143,19 @@ const routes: RouteRecordRaw[] = [
         name: 'JobReport',
       },
       {
+        path: 'reports/job/detail',
+        component: () => import('pages/admin/reports/JobReportDetail.vue'),
+        name: 'JobReportDetail',
+      },
+      {
         path: 'reports/application',
         component: () => import('pages/admin/reports/ApplicationReport.vue'),
         name: 'ApplicationReport',
+      },
+      {
+        path: 'reports/application/detail',
+        component: () => import('pages/admin/reports/ApplicationReportDetail.vue'),
+        name: 'ApplicationReportDetail',
       },
     ],
   },
