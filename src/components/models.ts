@@ -17,7 +17,7 @@ export interface UserInfo {
   createdAt: Date;
   updatedAt: Date;
   role: string;
-  image: string | null;
+  image: string;
 }
 
 export interface ProvincesInfo {

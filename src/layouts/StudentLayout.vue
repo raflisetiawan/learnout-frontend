@@ -69,6 +69,9 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+const handleImageError = () => {
+  userStore.$state.userImage += '/user.png';
+}
 
 
 </script>
@@ -93,7 +96,7 @@ const toggleLeftDrawer = () => {
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar>
-                  <img :src="studentStore.$state.data?.user?.image ?? ''">
+                  <img :src="userStore.$state.userImage" @error="handleImageError()">
                 </q-avatar>
               </div>
             </template>
@@ -196,7 +199,7 @@ const toggleLeftDrawer = () => {
           style="height: 150px ;background: radial-gradient(circle at 7.5% 24%, rgb(237, 161, 193) 0%, rgb(250, 178, 172) 25.5%, rgb(190, 228, 210) 62.3%, rgb(215, 248, 247) 93.8%);">
           <div class="absolute-bottom bg-transparent q-ml-md q-mb-md">
             <q-avatar size="56px" class="q-mb-sm">
-              <img class="rounded-borders" :src="studentStore.$state.data?.user?.image ?? ''" />
+              <img class="rounded-borders" :src="userStore.$state.userImage" />
             </q-avatar>
             <div class="text-weight-bold">{{ studentStore.$state.data?.user?.name }}</div>
             <div>{{ studentStore.$state.data?.user?.email }}</div>

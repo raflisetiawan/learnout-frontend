@@ -7,7 +7,7 @@ export const useStudentStore = defineStore('student', {
     data: {
       student: {} as StudentInfo,
       university: {} as UniversitiesInfo,
-      user: { image: '' } as UserInfo,
+      user: {} as UserInfo,
     },
   }),
 });

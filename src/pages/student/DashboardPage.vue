@@ -17,7 +17,7 @@ const getData = async () => {
     studentRejectCount.value = responseApplyCount.data?.applicationRejectCount;
 
     // Update the chart with new data
-    updateChart(responseApplyCount.data?.applicationsPerDay);
+    if (responseApplyCount.data?.applicationsPerDay.length > 0) updateChart(responseApplyCount.data?.applicationsPerDay);
   } catch (error) {
     throw error;
   }
