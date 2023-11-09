@@ -10,6 +10,8 @@ import { useQuasar } from 'quasar';
 import { useUserStore } from 'stores/user';
 import { useCompanyStore } from 'src/stores/company';
 import { useRoute, useRouter } from 'vue-router';
+import { JobTypeSelect } from 'src/models/job';
+import { JobApplicationRequisite } from 'src/models/job';
 
 const route = useRoute();
 const bar = ref();
@@ -41,7 +43,14 @@ const formJob = ref<JobWithCompanyWithCategoriesInfo>({
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-  company_id: 0
+  company_id: 0,
+  jobtypes: {
+    id: 0,
+    name: '',
+    label: '',
+    value: 0
+  },
+  jobtype_id: 0
 });
 
 const companyStore = useCompanyStore();
@@ -51,105 +60,141 @@ const categories = reactive<CategoryInfo[]>([]);
 const loadingSelectCategory = ref(false);
 const userStore = useUserStore();
 const router = useRouter();
+const jobtypes = ref<JobTypeSelect[]>([]);
+const jobRequisiteChecks = ref<JobApplicationRequisite>({
+  is_cover_letter: false,
+  is_proposal: false,
+  is_recommendation_letter: false,
+  is_resume: true,
+  is_transcript: false,
+})
+async function getCompanyInfo() {
+  const responseCompany = await api.get(`companies/getOneCompanyByUserId/${userStore.$state.userId}`);
+  companyStore.$state.companyId = responseCompany.data.company.id;
+  companyId.value = responseCompany.data.company.id;
+}
+
+async function getJobInfo() {
+  const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
+  formJob.value = response.data.data;
+}
+
+async function getCategoryInfo() {
+  const response = await api.get('categories');
+  formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
+    id: category.id,
+    name: category.name,
+    value: category.id,
+    label: category.name,
+  }));
+}
+
+async function getLocationInfo() {
+  selectLocationStore.$state.province = {
+    id: 0,
+    name: formJob.value.province,
+    value: 0,
+    label: formJob.value.province,
+  };
+  selectLocationStore.$state.district = {
+    id: 0,
+    name: formJob.value.district,
+    value: 0,
+    label: formJob.value.district,
+  };
+  selectLocationStore.$state.regency = {
+    id: 0,
+    name: formJob.value.regency,
+    value: 0,
+    label: formJob.value.regency,
+  };
+}
+
+async function getJobType() {
+  const response = await api.get(`jobtypes/${formJob.value.jobtype_id}`);
+  const jobtypeData = response.data.jobtype;
+  formJob.value.jobtypes = response.data.jobtype;
+  formJob.value.jobtypes.label = response.data.jobtype.name;
+  formJob.value.jobtypes.value = jobtypeData.id;
+}
+
+async function getAllJobTypes() {
+  const response = await api.get('jobtypes/all');
+  jobtypes.value = response.data.job_types;
+  jobtypes.value.map((jobtype) => {
+    jobtype.label = jobtype.name;
+    jobtype.value = jobtype.id;
+  });
+}
+
+async function getJobApplicationRequisites() {
+  const response = await api.get(`job-application-requisites/getByJoblistingId/${route.params.id}`);
+  jobRequisiteChecks.value = response.data.jobApplicationRequisite;
+}
 
 onMounted(async () => {
   loadingSelectCategory.value = true;
-  if (companyStore.$state.companyId === 0) {
-    try {
+  try {
+    if (companyStore.$state.companyId === 0) {
+      try {
+        bar.value.start();
+        await getCompanyInfo();
+        await getJobInfo();
+        await getCategoryInfo();
+        await getLocationInfo();
+      } catch (error) {
+        throw error;
+      }
+    } else {
       bar.value.start();
-      const responseCompany = await api.get(`companies/getOneCompanyByUserId/${userStore.$state.userId}`)
-      companyStore.$state.companyId = responseCompany.data.company.id;
-      companyId.value = responseCompany.data.company.id;
-      const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
-      formJob.value = response.data.data;
-      formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
-        id: category.id,
-        name: category.name,
-        value: category.id,
-        label: category.name,
-      }));
-      selectLocationStore.$state.province = {
-        id: 0,
-        name: formJob.value.province,
-        value: 0,
-        label: formJob.value.province,
-      };
-      selectLocationStore.$state.district = {
-        id: 0,
-        name: formJob.value.district,
-        value: 0,
-        label: formJob.value.district,
-      };
-      selectLocationStore.$state.regency = {
-        id: 0,
-        name: formJob.value.regency,
-        value: 0,
-        label: formJob.value.regency,
-      };
+      companyId.value = companyStore.$state.companyId;
+      try {
+        await getJobInfo();
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    try {
+      await getCompanyInfo();
+    } catch (error) {
+      throw error;
+    }
+
+    try {
+      await getCategoryInfo();
+      await getLocationInfo();
     } catch (error) {
       throw error;
     } finally {
+      loadingSelectCategory.value = false;
       bar.value.stop();
     }
-  } else {
-    bar.value.start();
-    companyId.value = companyStore.$state.companyId;
+
     try {
-      const response = await api.get(`/jobs/showJobWithCompanyAndCategories/${route.params.id}`);
-      formJob.value = response.data.data;
+      await getJobType();
     } catch (error) {
       throw error;
     }
-  }
-  try {
-    const getCompany = await api(`/companies/getOneCompanyByUserId/${userStore.$state.userId}`)
-    companyId.value = getCompany.data.company.id;
+
+    try {
+      await getAllJobTypes();
+    } catch (error) {
+      throw error;
+    }
+
+    try {
+      await getJobApplicationRequisites();
+    } catch (error) {
+      throw error;
+    }
   } catch (error) {
     throw error;
-  }
-  try {
-    const response = await api.get('categories');
-    let data = [];
-    data.push(...response.data.data);
-    data.map((category) => {
-      categories.push({
-        id: category.id,
-        name: category.name,
-        label: category.name,
-        value: category.id
-      });
-    })
-    formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
-      id: category.id,
-      name: category.name,
-      value: category.id,
-      label: category.name,
-    }));
-    selectLocationStore.$state.province = {
-      id: 0,
-      name: formJob.value.province,
-      value: 0,
-      label: formJob.value.province,
-    };
-    selectLocationStore.$state.district = {
-      id: 0,
-      name: formJob.value.district,
-      value: 0,
-      label: formJob.value.district,
-    };
-    selectLocationStore.$state.regency = {
-      id: 0,
-      name: formJob.value.regency,
-      value: 0,
-      label: formJob.value.regency,
-    };
-  } catch (error) {
-    throw error
   } finally {
-    loadingSelectCategory.value = false;
     bar.value.stop();
   }
-})
+});
+
 
 const selectLocationStore = useSelectLocationStore();
 
@@ -175,7 +220,13 @@ const onSubmit = async () => {
       schedule: formJob.value.schedule,
       start_time: `${formJob.value.start_time}:00`,
       categories: formJob.value.categories.map((category) => category.id),
-      company_id: companyId.value
+      company_id: companyId.value,
+      jobtype_id: formJob.value.jobtypes.id,
+      is_cover_letter: jobRequisiteChecks.value.is_cover_letter,
+      is_transcript: jobRequisiteChecks.value.is_transcript,
+      is_recommendation_letter: jobRequisiteChecks.value.is_recommendation_letter,
+      is_proposal: jobRequisiteChecks.value.is_proposal,
+      is_resume: jobRequisiteChecks.value.is_resume
     })
     router.push({ name: 'ListJob' })
   } catch (error) {
@@ -258,6 +309,13 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
                   </q-item>
                 </template>
               </q-select>
+              <q-select filled v-model="formJob.jobtypes" :options="jobtypes" label="Tipe pekerjaan" />
+              <div class="text-subtitle1">Syarat melamar kerja</div>
+              <q-checkbox v-model="jobRequisiteChecks.is_resume" label="Curriculum vitae" />
+              <q-checkbox v-model="jobRequisiteChecks.is_cover_letter" label="Surat Lamaran" />
+              <q-checkbox v-model="jobRequisiteChecks.is_proposal" label="Proposal" />
+              <q-checkbox v-model="jobRequisiteChecks.is_recommendation_letter" label="Surat Rekomendasi" />
+              <q-checkbox v-model="jobRequisiteChecks.is_transcript" label="Transkrip nilai" />
               <q-editor v-model="formJob.description" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

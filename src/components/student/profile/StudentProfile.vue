@@ -36,6 +36,7 @@ const redirectToStudentDetailPage = (studentId: string) => {
       </q-card-section>
     </q-card-section>
     <q-card-section class="q-pt-xs">
+      <div class="text-subtitle2">{{ studentData.student_roles.name }}</div>
       <div class="text-overline">{{ studentData.phone }}</div>
       <div class="text-caption text-grey">
         <div>Alamat: {{ studentData.address }}</div>

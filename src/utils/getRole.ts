@@ -6,6 +6,7 @@ const getRole = async (token: string | null) => {
     const user = await getUser(token);
     try {
       const response = await api.get(`users/${user.data.id}`);
+
       return response;
     } catch (error) {
       throw error;

@@ -1,3 +1,5 @@
+import { JobTypeSelect } from 'src/models/job';
+
 export interface Todo {
   id: number;
   content: string;
@@ -80,6 +82,7 @@ export interface JobInfo {
   category: CategoryInfo[];
   created_at: Date;
   updated_at: Date;
+  jobtype: JobTypeSelect;
 }
 
 export interface CategoryInfo {
@@ -150,6 +153,8 @@ export interface JobWithCompanyWithCategoriesInfo {
   company: CompanyInfo;
   company_id: number;
   categories: CategoryInfo[];
+  jobtypes: JobTypeSelect;
+  jobtype_id: number;
 }
 
 export interface ApplicationInfo {

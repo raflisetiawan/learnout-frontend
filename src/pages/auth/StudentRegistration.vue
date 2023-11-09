@@ -15,7 +15,8 @@ interface FormInfo {
   phone: number | string,
   university: UniversityInfo,
   category: CategoryInfo[],
-  accept: boolean
+  accept: boolean;
+  role: Roles;
 }
 
 interface SubmitError {
@@ -41,6 +42,13 @@ interface CategoryInfo {
   label: string
 }
 
+interface Roles {
+  name: string;
+  id: number;
+  label?: string;
+  value?: number;
+}
+
 const userStore = useUserStore();
 const universities = reactive<UniversityInfo[]>([]);
 const categories = reactive<CategoryInfo[]>([]);
@@ -54,10 +62,12 @@ const selectError = reactive<SelectError>({
   message: ''
 })
 
+
 const router = useRouter();
 const loading = ref(false);
 const loadingSelect = ref(false);
 const loadingSelectCategory = ref(false);
+const roles = ref<Roles[]>([])
 onMounted(async () => {
   loadingSelectCategory.value = true;
   loadingSelect.value = true;
@@ -92,6 +102,19 @@ onMounted(async () => {
       loadingSelectCategory.value = false;
       loadingSelect.value = false;
     }
+
+    try {
+      const response = await api.get('students/role/get');
+
+      roles.value = response.data.student_roles;
+      roles.value.map((role: Roles) => {
+        role.value = role.id
+        role.label = role.name
+      })
+
+    } catch (error) {
+      throw error;
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       error.response.data.message.forEach((errorMessage: string) => {
@@ -115,7 +138,13 @@ const formData = reactive<FormInfo>({
     label: 'Pilih Instansi'
   },
   category: [],
-  accept: false
+  accept: false,
+  role: {
+    id: 1,
+    name: 'mahasiswa',
+    label: 'mahasiswa',
+    value: 1,
+  },
 })
 
 const phoneValidation = helpers.regex(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im);
@@ -162,6 +191,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
 };
 
 const onSubmit = async () => {
+
   if (!$v.value.$invalid && formData.accept) {
     loading.value = true;
     try {
@@ -174,7 +204,8 @@ const onSubmit = async () => {
         categories: formData.category.map((category) => category.id),
         regency: selectLocationStore.$state.regency?.name,
         province: selectLocationStore.$state.province?.name,
-        district: selectLocationStore.$state.district?.name
+        district: selectLocationStore.$state.district?.name,
+        student_role_id: formData.role.id
       }, {
         headers: {
           Accept: 'application/json',
@@ -249,6 +280,7 @@ const onSubmit = async () => {
                 </template>
               </q-select>
               <LocationSelect />
+              <q-select filled v-model="formData.role" :options="roles" label="Posisi anda" />
 
               <q-toggle v-model="formData.accept" label="Saya menerima lisensi dan persyaratan" />
 

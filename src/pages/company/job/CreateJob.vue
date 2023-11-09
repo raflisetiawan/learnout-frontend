@@ -9,6 +9,7 @@ import { useSelectLocationStore } from 'src/stores/selectLocation';
 import { useQuasar } from 'quasar';
 import { useUserStore } from 'stores/user';
 import { useRouter } from 'vue-router';
+import { JobTypeSelect, JobApplicationRequisite } from 'src/models/job';
 
 const formJob = reactive<JobInfo>({
   id: 0,
@@ -22,14 +23,30 @@ const formJob = reactive<JobInfo>({
   start_time: '16:00',
   category: [],
   created_at: new Date(),
-  updated_at: new Date()
+  updated_at: new Date(),
+  jobtype: {
+    id: 1,
+    label: 'Part-time',
+    name: 'Part-time',
+    value: 1
+  }
 });
+
+const jobRequisiteChecks = reactive<JobApplicationRequisite>({
+  is_cover_letter: false,
+  is_proposal: false,
+  is_recommendation_letter: false,
+  is_resume: true,
+  is_transcript: false,
+})
+
 const $q = useQuasar();
 const companyId = ref();
 const categories = reactive<CategoryInfo[]>([]);
 const loadingSelectCategory = ref(false);
 const userStore = useUserStore();
 const router = useRouter();
+const jobtypes = ref<JobTypeSelect[]>([]);
 
 onMounted(async () => {
   loadingSelectCategory.value = true;
@@ -57,6 +74,18 @@ onMounted(async () => {
   } finally {
     loadingSelectCategory.value = false;
   }
+
+  try {
+    const response = await api.get('jobtypes/all');
+    jobtypes.value = response.data.job_types;
+    jobtypes.value.map((jobtype) => {
+      jobtype.label = jobtype.name;
+      jobtype.value = jobtype.id;
+    })
+
+  } catch (error) {
+    throw error;
+  }
 })
 
 const selectLocationStore = useSelectLocationStore();
@@ -71,23 +100,33 @@ const rules = {
 const $v = useVuelidate(rules, formJob)
 
 const onSubmit = async () => {
-  try {
-    await api.post('jobs', {
-      title: formJob.title,
-      description: formJob.description,
-      location: formJob.location,
-      regency: selectLocationStore.$state.regency?.name,
-      province: selectLocationStore.$state.province?.name,
-      district: selectLocationStore.$state.district?.name,
-      end_time: `${formJob.end_time}:00`,
-      schedule: formJob.schedule,
-      start_time: `${formJob.start_time}:00`,
-      categories: formJob.category.map((category) => category.id),
-      company_id: companyId.value
-    })
-    router.push({ name: 'ListJob' })
-  } catch (error) {
-    throw error;
+  if (!$v.value.$invalid) {
+    try {
+      await api.post('jobs', {
+        title: formJob.title,
+        description: formJob.description,
+        location: formJob.location,
+        regency: selectLocationStore.$state.regency?.name,
+        province: selectLocationStore.$state.province?.name,
+        district: selectLocationStore.$state.district?.name,
+        end_time: `${formJob.end_time}:00`,
+        schedule: formJob.schedule,
+        start_time: `${formJob.start_time}:00`,
+        categories: formJob.category.map((category) => category.id),
+        company_id: companyId.value,
+        jobtype_id: formJob.jobtype.id,
+        is_cover_letter: jobRequisiteChecks.is_cover_letter,
+        is_transcript: jobRequisiteChecks.is_transcript,
+        is_recommendation_letter: jobRequisiteChecks.is_recommendation_letter,
+        is_proposal: jobRequisiteChecks.is_proposal,
+        is_resume: jobRequisiteChecks.is_resume
+      })
+      router.push({ name: 'ListJob' })
+    } catch (error) {
+      throw error;
+    }
+  } else {
+    $v.value.$touch();
   }
 }
 const optionsCategory = ref(categories);
@@ -165,6 +204,13 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
                   </q-item>
                 </template>
               </q-select>
+              <q-select filled v-model="formJob.jobtype" :options="jobtypes" label="Tipe pekerjaan" />
+              <div class="text-subtitle1">Syarat melamar kerja</div>
+              <q-checkbox v-model="jobRequisiteChecks.is_resume" label="Curriculum vitae" />
+              <q-checkbox v-model="jobRequisiteChecks.is_cover_letter" label="Surat Lamaran" />
+              <q-checkbox v-model="jobRequisiteChecks.is_proposal" label="Proposal" />
+              <q-checkbox v-model="jobRequisiteChecks.is_recommendation_letter" label="Surat Rekomendasi" />
+              <q-checkbox v-model="jobRequisiteChecks.is_transcript" label="Transkrip nilai" />
               <q-editor v-model="formJob.description" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

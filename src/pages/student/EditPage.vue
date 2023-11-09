@@ -19,6 +19,7 @@ interface FormInfo {
   regency: string;
   province: string;
   resume: string;
+  role: Roles;
 }
 
 interface SubmitError {
@@ -46,6 +47,14 @@ interface CategoryInfo {
   label: string;
 }
 
+interface Roles {
+  name: string;
+  id: number;
+  label?: string;
+  value?: number;
+}
+
+
 const bar = ref();
 const userStore = useUserStore();
 const universities = reactive<UniversityInfo[]>([]);
@@ -59,7 +68,7 @@ const selectError = reactive<SelectError>({
   isError: false,
   message: '',
 });
-
+const roles = ref<Roles[]>([])
 const router = useRouter();
 const loading = ref(false);
 const loadingSelect = ref(false);
@@ -80,7 +89,13 @@ const formData = reactive<FormInfo>({
   district: '',
   regency: '',
   province: '',
-  resume: ''
+  resume: '',
+  role: {
+    id: 0,
+    name: '',
+    label: '',
+    value: 0,
+  },
 });
 const studentId = ref();
 
@@ -96,6 +111,7 @@ const $v = useVuelidate(rules, formData);
 onMounted(async () => {
   loadingSelectCategory.value = true;
   loadingSelect.value = true;
+
   try {
     bar.value.start();
     const responseUniv = await api.get('universities');
@@ -115,6 +131,14 @@ onMounted(async () => {
       value: category.id,
     })));
 
+    const responseRole = await api.get('students/role/get');
+
+    roles.value = responseRole.data.student_roles;
+    roles.value.map((role: Roles) => {
+      role.value = role.id
+      role.label = role.name
+    })
+
     const responseStudent = await api.get(`users/getUserWithStudentWithUniversityByUserId/${userStore.$state.userId}`);
     studentId.value = responseStudent.data.student.id;
     const studentData = responseStudent.data.student;
@@ -125,6 +149,9 @@ onMounted(async () => {
     formData.district = studentData.district;
     formData.province = studentData.province;
     formData.resume = studentData.resume;
+
+
+
     formData.university = {
       id: studentData.university.id,
       name: studentData.university.name,
@@ -156,6 +183,12 @@ onMounted(async () => {
       value: 0,
       label: formData.regency,
     };
+
+
+    formData.role.label = studentData.student_roles.name
+    formData.role.id = studentData.student_roles.id
+    formData.role.value = studentData.student_roles.id
+    formData.role.name = studentData.student_roles.name
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       error.response.data.message.forEach((errorMessage: string) => {
@@ -216,6 +249,7 @@ const onSubmit = async () => {
         regency: selectLocationStore.$state.regency?.name,
         district: selectLocationStore.$state.district?.name,
         province: selectLocationStore.$state.province?.name,
+        student_role_id: formData.role.id
       }, {
         headers: {
           Accept: 'application/json',
@@ -289,6 +323,7 @@ const onSubmit = async () => {
                 </template>
               </q-select>
               <LocationSelect :is-edit="true" />
+              <q-select filled v-model="formData.role" :options="roles" label="Posisi anda" />
               <q-editor v-model="formData.resume" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

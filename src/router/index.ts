@@ -40,7 +40,7 @@ export default route(function () {
           const response = await getRole(localStorage.getItem('token'));
           userStore.$state.userId = response.data.data.id;
           userStore.$state.userImage = response.data.data.image;
-          role = response.data.data.role;
+          role = response.data.data.role.name;
           roleStore.$state.role = role;
         } catch (error) {
           throw error;

@@ -83,7 +83,7 @@ const onSubmit = async () => {
         }
       });
       try {
-        await api.patch(`users/update_role/${userStore.$state.userId}`, { role: 'company' });
+        await api.patch(`users/update_role/${userStore.$state.userId}`);
         roleStore.$state.role = 'company';
         router.push('/')
       } catch (error) {

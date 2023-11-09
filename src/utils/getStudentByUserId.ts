@@ -6,6 +6,7 @@ const getStudentByUserId = async (token: string | null) => {
     const user = await getUser(token);
     try {
       const response = await api.get(`students/user-id/${user.data.id}`);
+
       return response;
     } catch (error) {
       throw error;
