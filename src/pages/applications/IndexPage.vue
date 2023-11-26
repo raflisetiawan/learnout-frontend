@@ -5,11 +5,10 @@ import { useJobStore } from 'src/stores/job';
 import { useRoute, useRouter } from 'vue-router';
 import { api } from 'src/boot/axios';
 import { JobWithCompanyWithCategoriesInfo } from 'src/components/models';
-import { useVuelidate } from '@vuelidate/core';
-import { required } from '@vuelidate/validators';
 import { useUserStore } from 'src/stores/user';
 import { SubmitError } from 'components/models';
 import axios from 'axios';
+import { JobApplicationRequisiteBooleanFormat } from 'src/models/job';
 
 const route = useRoute();
 const router = useRouter();
@@ -24,6 +23,15 @@ const submitError = reactive<SubmitError>({
   isError: false,
   message: ''
 })
+const jobApplicationRequisite = ref<JobApplicationRequisiteBooleanFormat>({
+  is_cover_letter: false,
+  is_proposal: false,
+  is_resume: false,
+  is_transcript: false,
+  is_recommendation_letter: false,
+  is_health_insurance: false,
+  id: 0
+});
 
 if (jobStore.$state.temporaryJob === null) {
   onMounted(async () => {
@@ -40,6 +48,11 @@ if (jobStore.$state.temporaryJob === null) {
       bar.value.stop();
       loading.value = false;
     }
+    try {
+      await getJobApplicationRequisite();
+    } catch (error) {
+      throw error;
+    }
   });
 } else {
   job.value = jobStore.$state.temporaryJob;
@@ -53,7 +66,17 @@ if (jobStore.$state.temporaryJob === null) {
       bar.value.stop();
       loading.value = false;
     }
+    try {
+      await getJobApplicationRequisite();
+    } catch (error) {
+      throw error;
+    }
   })
+}
+
+const getJobApplicationRequisite = async () => {
+  const response = await api.get(`job-application-requisites/getByJoblistingId/${route.params.id}`);
+  jobApplicationRequisite.value = response.data.jobApplicationRequisite;
 }
 
 const applicationForm = ref<ApplicationInfo>({
@@ -65,53 +88,53 @@ const applicationForm = ref<ApplicationInfo>({
   status: '',
   student_id: 0,
   updated_at: new Date(),
-  pending: ''
+  pending: '',
+  recommendation_letter: [],
+  proposal: [],
+  transcripts: [],
+  healthInsurance: []
 })
 
-const rules = {
-  cover_letter: { required },
-  resume: { required },
-}
-const $v = useVuelidate(rules, applicationForm)
 
 const onSubmit = async () => {
-  if (!$v.value.$invalid) {
-    try {
-      loading.value = true;
-      await api.post('/applications', {
-        joblisting_id: job.value?.id,
-        resume: applicationForm.value.resume,
-        cover_letter: applicationForm.value.cover_letter,
-        status: 'pending',
-        student_id: studentId.value,
-      }, {
-        headers: {
-          'content-type': 'multipart/form-data',
-        }
-      });
-      router.push({ name: 'HistoryApplication' });
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        if (error.response.data.message !== undefined) {
-          submitError.isError = true;
-          submitError.message = error.response.data.message
-          throw error;
-        } else {
-          submitError.isError = true;
-          submitError.message = 'Terjadi masalah, coba lagi';
-          throw error;
-        }
+  try {
+    loading.value = true;
+    await api.post('/applications', {
+      joblisting_id: job.value?.id,
+      resume: applicationForm.value.resume,
+      cover_letter: applicationForm.value.cover_letter,
+      status: 'pending',
+      student_id: studentId.value,
+      transcripts: applicationForm.value.transcripts,
+      proposal: applicationForm.value.proposal,
+      recommendation_letter: applicationForm.value.recommendation_letter,
+      health_insurance: applicationForm.value.healthInsurance,
+    }, {
+      headers: {
+        'content-type': 'multipart/form-data',
+      }
+    });
+    router.push({ name: 'HistoryApplication' });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.message !== undefined) {
+        submitError.isError = true;
+        submitError.message = error.response.data.message
+        throw error;
       } else {
         submitError.isError = true;
-        submitError.message = 'Terjadi masalah, coba lagi'
+        submitError.message = 'Terjadi masalah, coba lagi';
         throw error;
       }
-    } finally {
-      loading.value = false;
+    } else {
+      submitError.isError = true;
+      submitError.message = 'Terjadi masalah, coba lagi'
+      throw error;
     }
+  } finally {
+    loading.value = false;
   }
 };
-
 
 </script>
 
@@ -134,21 +157,49 @@ const onSubmit = async () => {
     </div>
     <q-form @submit="onSubmit" class="q-gutter-md" enctype="multipart/form-data">
       <div class="row">
-        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md">
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_cover_letter">
           <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined v-model="applicationForm.cover_letter"
-            lazy-rules :error="$v.cover_letter.$error"
-            :error-message="$v.cover_letter.$errors.map((e) => e.$message).join()" @input="$v.cover_letter.$touch"
-            @blur="$v.cover_letter.$touch" label="Upload Surat Lamaran">
+            lazy-rules label="Upload Surat Lamaran">
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>
           </q-file>
         </div>
-        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md">
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_resume">
           <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined v-model="applicationForm.resume"
-            label="Upload CV" lazy-rules :error="$v.resume.$error"
-            :error-message="$v.resume.$errors.map((e) => e.$message).join()" @input="$v.resume.$touch"
-            @blur="$v.resume.$touch">
+            label="Upload CV" lazy-rules>
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </div>
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_proposal">
+          <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined v-model="applicationForm.proposal"
+            label="Upload Propolsal" lazy-rules>
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </div>
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_recommendation_letter">
+          <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined
+            v-model="applicationForm.recommendation_letter" label="Surat rekomendasi" lazy-rules>
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </div>
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_transcript">
+          <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined v-model="applicationForm.transcripts"
+            label="Transkrip nilai" lazy-rules>
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </div>
+        <div class="col-md-7 col-sm-9 col-xs-10 q-mb-md" v-if="jobApplicationRequisite.is_health_insurance">
+          <q-file counter accept=".pdf,.docx,.txt" max-file-size="5242880" outlined
+            v-model="applicationForm.healthInsurance" label="Asuransi kesehatan" lazy-rules>
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>

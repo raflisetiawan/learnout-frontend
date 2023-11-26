@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
-import { required, helpers } from '@vuelidate/validators';
+import { required, helpers, url } from '@vuelidate/validators';
 import { api } from 'src/boot/axios';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -20,6 +20,7 @@ interface FormInfo {
   province: string;
   resume: string;
   role: Roles;
+  linkedin: string;
 }
 
 interface SubmitError {
@@ -89,13 +90,14 @@ const formData = reactive<FormInfo>({
   district: '',
   regency: '',
   province: '',
-  resume: '',
+  resume: 'Isikan data diri anda',
   role: {
     id: 0,
     name: '',
     label: '',
     value: 0,
   },
+  linkedin: ''
 });
 const studentId = ref();
 
@@ -105,6 +107,7 @@ const rules = {
   fullName: { required },
   address: { required },
   phone: { required, phoneValidation: helpers.withMessage('Nomor handphone tidak valid', phoneValidation) },
+  linkedin: { linkedinValidation: helpers.withMessage('URL tidak valid', url) }
 };
 const $v = useVuelidate(rules, formData);
 
@@ -148,7 +151,11 @@ onMounted(async () => {
     formData.regency = studentData.regency;
     formData.district = studentData.district;
     formData.province = studentData.province;
-    formData.resume = studentData.resume;
+    console.log(studentData);
+
+
+    formData.linkedin = studentData.linkedin;
+    studentData.resume !== null ? formData.resume = studentData.resume : formData.resume = ' '
 
 
 
@@ -235,6 +242,8 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
 };
 
 const onSubmit = async () => {
+  console.log(formData);
+
   if (!$v.value.$invalid) {
     loading.value = true;
     try {
@@ -249,7 +258,8 @@ const onSubmit = async () => {
         regency: selectLocationStore.$state.regency?.name,
         district: selectLocationStore.$state.district?.name,
         province: selectLocationStore.$state.province?.name,
-        student_role_id: formData.role.id
+        student_role_id: formData.role.id,
+        linkedin: formData.linkedin
       }, {
         headers: {
           Accept: 'application/json',
@@ -300,6 +310,10 @@ const onSubmit = async () => {
               <q-input type="tel" filled v-model="formData.phone" label="Nomor telephone" lazy-rules
                 :error="$v.phone.$error" :error-message="$v.phone.$errors.map((e) => e.$message).join()"
                 @input="$v.phone.$touch" @blur="$v.phone.$touch" />
+              <q-input type="text" filled v-model="formData.linkedin" label="Link linkedin anda" lazy-rules
+                hint="Opsional" :error="$v.linkedin.$error"
+                :error-message="$v.linkedin.$errors.map((e) => e.$message).join()" @input="$v.linkedin.$touch"
+                @blur="$v.linkedin.$touch" />
 
               <q-select :loading="loadingSelect" filled v-model="formData.university" use-input input-debounce="0"
                 @filter="filterFn" behavior="dialog" :options="options" label="Instansi">
@@ -324,6 +338,7 @@ const onSubmit = async () => {
               </q-select>
               <LocationSelect :is-edit="true" />
               <q-select filled v-model="formData.role" :options="roles" label="Posisi anda" />
+              <div class="text-h6">Isi data diri anda:</div>
               <q-editor v-model="formData.resume" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

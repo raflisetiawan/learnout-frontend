@@ -65,10 +65,10 @@ export default route(function () {
           next();
         }
       } else if (to.meta.requiresCompany) {
-        if (role === 'company') next();
+        if (roleStore.$state.role === 'company') next();
         else next({ name: 'Unauthorized' });
       } else if (to.meta.requiresdAdmin) {
-        if (role === 'admin') next();
+        if (roleStore.$state.role === 'admin') next();
         else next({ name: 'Unauthorized' }); // Lanjutkan navigasi ke rute berikutnya
       } else {
         next();

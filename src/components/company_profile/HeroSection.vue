@@ -15,7 +15,7 @@ const onSubmit = async () => {
   <div class="hero-container">
     <div class="hero-content">
       <div class="hero-text">
-        <h3 class="hero-title">Temukan Peluang Karir Terbaik untuk Mahasiswa</h3>
+        <h3 class="hero-title">Temukan Peluang Karir Terbaik untuk Anda</h3>
         <p class="hero-description">Cari pekerjaan yang relevan dengan jurusan Anda dan mulailah membangun pengalaman
           kerja yang berharga. Web app kami menyediakan fitur pencarian yang cerdas dan filter yang membantu Anda
           menemukan pekerjaan yang cocok dengan latar belakang pendidikan dan minat Anda dan filter sesuai tempat kampus

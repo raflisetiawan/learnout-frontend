@@ -10,8 +10,6 @@ import FooterSection from 'components/FooterSection.vue';
 
 <template>
   <q-layout view="lHh Lpr lFf">
-
-
     <q-page-container>
       <HeroSection />
       <q-intersection transition="scale">

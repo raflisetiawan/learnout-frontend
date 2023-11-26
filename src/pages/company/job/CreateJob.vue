@@ -38,6 +38,7 @@ const jobRequisiteChecks = reactive<JobApplicationRequisite>({
   is_recommendation_letter: false,
   is_resume: true,
   is_transcript: false,
+  is_health_insurance: false
 })
 
 const $q = useQuasar();
@@ -101,6 +102,8 @@ const $v = useVuelidate(rules, formJob)
 
 const onSubmit = async () => {
   if (!$v.value.$invalid) {
+    console.log(jobRequisiteChecks);
+
     try {
       await api.post('jobs', {
         title: formJob.title,
@@ -119,7 +122,8 @@ const onSubmit = async () => {
         is_transcript: jobRequisiteChecks.is_transcript,
         is_recommendation_letter: jobRequisiteChecks.is_recommendation_letter,
         is_proposal: jobRequisiteChecks.is_proposal,
-        is_resume: jobRequisiteChecks.is_resume
+        is_resume: jobRequisiteChecks.is_resume,
+        is_health_insurance: jobRequisiteChecks.is_health_insurance
       })
       router.push({ name: 'ListJob' })
     } catch (error) {
@@ -211,6 +215,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
               <q-checkbox v-model="jobRequisiteChecks.is_proposal" label="Proposal" />
               <q-checkbox v-model="jobRequisiteChecks.is_recommendation_letter" label="Surat Rekomendasi" />
               <q-checkbox v-model="jobRequisiteChecks.is_transcript" label="Transkrip nilai" />
+              <q-checkbox v-model="jobRequisiteChecks.is_health_insurance" label="Asuransi kesehatan" />
               <q-editor v-model="formJob.description" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

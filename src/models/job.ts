@@ -15,15 +15,17 @@ export interface JobApplicationRequisite {
   is_recommendation_letter: boolean;
   is_proposal: boolean;
   is_resume: boolean;
+  is_health_insurance: boolean;
 }
 export interface JobApplicationRequisiteBooleanFormat {
   id: number;
-  is_cover_letter: number;
-  is_transcript: number;
-  is_recommendation_letter: number;
-  is_proposal: number;
-  is_resume: number;
-  joblisting_id: number;
-  created_at: string;
-  updated_at: string;
+  is_cover_letter: boolean;
+  is_transcript: boolean;
+  is_recommendation_letter: boolean;
+  is_proposal: boolean;
+  is_resume: boolean;
+  is_health_insurance: boolean;
+  joblisting_id?: number;
+  created_at?: string;
+  updated_at?: string;
 }

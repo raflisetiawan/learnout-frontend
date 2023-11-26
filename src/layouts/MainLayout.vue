@@ -12,10 +12,6 @@ const userStore = useUserStore();
 const roleStore = useRoleStore();
 const $q = useQuasar();
 
-const onItemClick = () => {
-  console.log('ok')
-}
-
 const signOut = async () => {
   try {
     await api.get('signout');
@@ -53,8 +49,33 @@ const handleImageError = () => {
         </q-toolbar-title>
 
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
-          <q-btn flat dense>Home</q-btn>
-          <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
+          <q-btn flat dense :to="{ name: 'Home' }">Home</q-btn>
+          <q-btn-dropdown flat label="Lowongan">
+            <q-list>
+              <q-item :to="{ name: 'AllJob' }" clickable v-close-popup>
+                <q-item-section>
+                  <q-item-label>Semua Lowongan</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item :to="{ name: 'PartTimePage' }" clickable v-close-popup>
+                <q-item-section>
+                  <q-item-label>Part-time</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup :to="{ name: 'FullTimePage' }">
+                <q-item-section>
+                  <q-item-label>Full-time</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup :to="{ name: 'ApprenticeshipPage' }">
+                <q-item-section>
+                  <q-item-label>Magang</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
           <q-btn flat dense>Kategori</q-btn>
           <q-btn flat dense :to="{ name: 'AboutUs' }">Tentang Kami</q-btn>
           <q-btn flat dense to="/contact">Kontak</q-btn>
@@ -67,25 +88,35 @@ const handleImageError = () => {
               </div>
             </template>
             <q-list>
-              <q-item clickable v-close-popup :to="{ name: 'MyProfile' }">
+              <q-item clickable v-close-popup v-if="roleStore.$state.role === 'company'"
+                :to="{ name: 'MyProfileCompany' }">
+                <q-item-section>
+                  <q-item-label>My Profile</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup v-else-if="roleStore.$state.role === 'admin'"
+                :to="{ name: 'MyProfileAdmin' }">
+                <q-item-section>
+                  <q-item-label>My Profile</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup v-else :to="{ name: 'MyProfile' }">
                 <q-item-section>
                   <q-item-label>My Profile</q-item-label>
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup @click="onItemClick" v-if="roleStore.$state.role === 'company'"
-                :to="{ name: 'Company' }">
+              <q-item clickable v-close-popup v-if="roleStore.$state.role === 'company'" :to="{ name: 'Company' }">
                 <q-item-section>
                   <q-item-label>Beranda Company</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="onItemClick" v-if="roleStore.$state.role === 'admin'"
-                :to="{ name: 'Admin' }">
+              <q-item clickable v-close-popup v-if="roleStore.$state.role === 'admin'" :to="{ name: 'Admin' }">
                 <q-item-section>
                   <q-item-label>Beranda Admin</q-item-label>
                 </q-item-section>
               </q-item>
-              <!-- <q-item clickable v-close-popup @click="onItemClick" v-if="roleStore.$state.role === 'user'" :to="{name: 'Admin'}">
+              <!-- <q-item clickable v-close-popup v-if="roleStore.$state.role === 'user'" :to="{name: 'Admin'}">
                 <q-item-section>
                   <q-item-label>Beranda Company</q-item-label>
                 </q-item-section>
@@ -187,14 +218,51 @@ const handleImageError = () => {
         <q-toolbar-title class="text-black q-ml-md">
           <router-link style="text-decoration: none; color: black;" to="/">Learnout</router-link>
         </q-toolbar-title>
-
         <div v-if="$q.screen.gt.sm" class="q-ml-xs q-gutter-md text-body2 text-weight-bold row items-center no-wrap">
-          <q-btn flat dense>Home</q-btn>
-          <q-btn flat dense :to="{ name: 'AllJob' }">Lowongan</q-btn>
+          <q-btn flat dense :to="{ name: 'Home' }">Home</q-btn>
+          <q-btn-dropdown flat label="Lowongan">
+            <q-list>
+              <q-item :to="{ name: 'AllJob' }" clickable v-close-popup>
+                <q-item-section>
+                  <q-item-label>Semua Lowongan</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item :to="{ name: 'PartTimePage' }" clickable v-close-popup>
+                <q-item-section>
+                  <q-item-label>Part-time</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup :to="{ name: 'FullTimePage' }">
+                <q-item-section>
+                  <q-item-label>Full-time</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item :to="{ name: 'ApprenticeshipPage' }" clickable v-close-popup>
+                <q-item-section>
+                  <q-item-label>Magang</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
           <q-btn flat dense>Kategori</q-btn>
           <q-btn flat dense :to="{ name: 'AboutUs' }">Tentang Kami</q-btn>
-          <q-btn flat dense :to="{ name: 'ContactPage' }">Kontak</q-btn>
-          <q-btn :to="{ name: 'SignUp' }" color="primary">Daftar</q-btn>
+          <q-btn flat dense to="/contact">Kontak</q-btn>
+          <q-btn-dropdown color="primary" dense label="Daftar">
+            <q-list>
+              <q-item clickable v-close-popup :to="{ name: 'SignIn' }">
+                <q-item-section>
+                  <q-item-label>Sign In</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup :to="{ name: 'SignUp' }">
+                <q-item-section>
+                  <q-item-label>Sign Up</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </div>
       </q-toolbar>
 

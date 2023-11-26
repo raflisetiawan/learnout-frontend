@@ -154,7 +154,8 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'reports/application/detail',
-        component: () => import('pages/admin/reports/ApplicationReportDetail.vue'),
+        component: () =>
+          import('pages/admin/reports/ApplicationReportDetail.vue'),
         name: 'ApplicationReportDetail',
       },
     ],
@@ -238,10 +239,44 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/jobs/IndexPage.vue'),
         name: 'AllJob',
       },
+
       {
         path: ':id',
         component: () => import('src/pages/jobs/JobDetailPage.vue'),
         name: 'JobDetail',
+      },
+    ],
+  },
+  {
+    path: '/part-time',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/jobs/part-time/IndexPage.vue'),
+        name: 'PartTimePage',
+      },
+    ],
+  },
+  {
+    path: '/apprenticeship',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/jobs/apprenticeship/IndexPage.vue'),
+        name: 'ApprenticeshipPage',
+      },
+    ],
+  },
+  {
+    path: '/full-time',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/jobs/full-time/IndexPage.vue'),
+        name: 'FullTimePage',
       },
     ],
   },

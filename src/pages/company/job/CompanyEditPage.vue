@@ -67,6 +67,7 @@ const jobRequisiteChecks = ref<JobApplicationRequisite>({
   is_recommendation_letter: false,
   is_resume: true,
   is_transcript: false,
+  is_health_insurance: false
 })
 async function getCompanyInfo() {
   const responseCompany = await api.get(`companies/getOneCompanyByUserId/${userStore.$state.userId}`);
@@ -80,7 +81,7 @@ async function getJobInfo() {
 }
 
 async function getCategoryInfo() {
-  const response = await api.get('categories');
+  await api.get('categories');
   formJob.value.categories = formJob.value.categories.map((category: CategoryInfo) => ({
     id: category.id,
     name: category.name,
@@ -226,7 +227,8 @@ const onSubmit = async () => {
       is_transcript: jobRequisiteChecks.value.is_transcript,
       is_recommendation_letter: jobRequisiteChecks.value.is_recommendation_letter,
       is_proposal: jobRequisiteChecks.value.is_proposal,
-      is_resume: jobRequisiteChecks.value.is_resume
+      is_resume: jobRequisiteChecks.value.is_resume,
+      is_health_insurance: jobRequisiteChecks.value.is_health_insurance
     })
     router.push({ name: 'ListJob' })
   } catch (error) {
@@ -316,6 +318,7 @@ const filterFnCategory = (val: string, update: (callback: () => void) => void) =
               <q-checkbox v-model="jobRequisiteChecks.is_proposal" label="Proposal" />
               <q-checkbox v-model="jobRequisiteChecks.is_recommendation_letter" label="Surat Rekomendasi" />
               <q-checkbox v-model="jobRequisiteChecks.is_transcript" label="Transkrip nilai" />
+              <q-checkbox v-model="jobRequisiteChecks.is_health_insurance" label="Asuransi kesehatan" />
               <q-editor v-model="formJob.description" :dense="$q.screen.lt.md" :toolbar="[
                 [
                   {

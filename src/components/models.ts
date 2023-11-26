@@ -161,12 +161,16 @@ export interface ApplicationInfo {
   id: number;
   student_id: number;
   joblisting_id: number;
-  cover_letter: string[] | File[] | FileList | null | undefined;
-  resume: string[] | File[] | FileList | null | undefined;
+  cover_letter?: string[] | File[] | FileList | null | undefined;
+  resume?: string[] | File[] | FileList | null | undefined;
   status: string;
   created_at: Date;
   updated_at: Date;
   pending: string;
+  recommendation_letter?: string[] | File[] | FileList | null | undefined;
+  proposal?: string[] | File[] | FileList | null | undefined;
+  transcripts?: string[] | File[] | FileList | null | undefined;
+  healthInsurance?: string[] | File[] | FileList | null | undefined;
 }
 
 export interface JobWithCompanyInfo {
